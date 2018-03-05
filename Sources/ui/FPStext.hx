@@ -43,6 +43,7 @@ class FPStext
 	
 	inline public function update():Void
 	{
+		totalFrames++;
 		currentTime = Scheduler.realTime();
 		deltaTime = (currentTime - previousTime);
 		previousTime = currentTime;
