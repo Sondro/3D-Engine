@@ -901,6 +901,7 @@ class MeshLoader
 
 			//RenderTexture.renderTo(finalTarget,shadowMap,0,0,0.2,RenderTexture.Chanel.Color,true);
 
+			fps.totalFrames++;
 			fps.draw(g2);
 			g2.end();
 
