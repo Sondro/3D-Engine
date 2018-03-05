@@ -25,9 +25,9 @@ class FPStext
 	private var deltaTime:Float;
 
 
-	public var gColor = kha.Color.White;
-	public var gfontSize = 28;
-	public var gFont:kha.Font;
+	public var color = kha.Color.White;
+	public var fontSize = 28;
+	public var font:kha.Font;
 	public var x = 20.0;
 	public var y = 20.0;
 	public var xMargin:Float;
@@ -38,7 +38,7 @@ class FPStext
 		totalFrames = 0;
 		previousTime = 0.0;
 		elapsedTime = 0.0;
-		xMargin = gfontSize * 2;
+		xMargin = fontSize * 2;
 	}
 	
 	inline public function update():Void
@@ -59,15 +59,15 @@ class FPStext
 
 	inline public function init():Void
 	{
-		xMargin = gfontSize * 2;
-		//gFont = kha.Assets.fonts.Oswald_Regular;
+		xMargin = fontSize * 2;
+		//font = kha.Assets.fonts.Oswald_Regular;
 		//x = plume.Plm.gameWidth - xMargin;
 	}
 
 	inline public function draw(g:kha.graphics2.Graphics):Void
 	{	
 		if(!on) { return; }	
-		g.fontSize = gfontSize;
+		g.fontSize = fontSize;
 		g.drawString(Std.string(this.curFPS), x, y);
 	}
 
