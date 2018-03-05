@@ -3,10 +3,13 @@
 
 ### Controls:
 
-WASD * or ARROWS to move
-Q & E + to rotate camera
-F1 - toggle FPS
-
+- WASD		  :: to move
+	- ARROWS
+- Q & E           :: to rotate camera
+- F1              :: toggle FPS
+- O			  :: Jump
+	- SPACEBAR
+	- NUMPAD9  
 
 ### To-Do:
 ```
