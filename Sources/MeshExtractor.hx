@@ -135,7 +135,7 @@ class MeshExtractor
 			for(child in aData.children)
 			{
 				 textureName = getTextureName(child,aData,geomtry.ref);
-				 if(textureName!=null) { break; }
+				 if(textureName != null) { break; }
 			}
 			if(textureName == null || textureName == "")
 			{
@@ -144,12 +144,12 @@ class MeshExtractor
 			texture = cast Reflect.field(Assets.images,textureName);
 			if(texture != null) { texture.generateMipmaps(3); }
 
-			boneIndexs=new Array<Int>();
-			boneWeight=new Array<Float>();
+			boneIndexs = new Array<Int>();
+			boneWeight = new Array<Float>();
 			
-			if(aSkeletons !=null && aSkeletons.length != 0)
+			if(aSkeletons != null && aSkeletons.length != 0)
 			{
-				counter=0;
+				counter = 0;
 
 				for(numAffectingBones in skin.boneCountArray.values)
 				{
@@ -158,7 +158,7 @@ class MeshExtractor
 						boneIndexs.push(skin.boneIndexArray.values[counter+i]);
 						boneWeight.push(skin.boneWeightArray.values[counter+i]);
 					}
-					counter+=numAffectingBones;
+					counter += numAffectingBones;
 					if(numAffectingBones>4) { throw "implementation limited to 4 bones per vertex"; }
 					for(i in numAffectingBones...4) //fill up to 4 bones per vertex
 					{
@@ -214,7 +214,7 @@ class MeshExtractor
 			indexBuffer.unlock();
 			object3d = new Object3d();
 			
-			if(aSkeletons!=null&&aSkeletons.length!=0)
+			if(aSkeletons != null && aSkeletons.length != 0)
 			{
 				bones = new Array();
 				skeleton = skin.skeleton;
