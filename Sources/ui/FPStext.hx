@@ -11,13 +11,6 @@ class FPStext
 
 	public var curFPS:Int = 0;
 	public var totalFrames:Int = 0;
-	//public var curFPS:UInt;
-	//public var totalFrames:UInt;	
-	
-	// private var elapsedTime:kha.FastFloat;
-	// private var previousTime:kha.FastFloat;	
-	// private var currentTime:kha.FastFloat;
-	// private var deltaTime:kha.FastFloat;
 
 	private var elapsedTime:Float = 0;
  	private var previousTime:Float = 0;	
@@ -67,8 +60,16 @@ class FPStext
 	inline public function draw(g:kha.graphics2.Graphics):Void
 	{	
 		if(!on) { return; }	
+		g.drawString(Std.string(this.curFPS), x, y);
+	}
+	
+	inline public function updateAndDraw(g:kha.graphics2.Graphics):Void
+	{	
+		if(!on) { return; }	
+		g.color = color;
 		g.fontSize = fontSize;
 		g.drawString(Std.string(this.curFPS), x, y);
+
 	}
 
 	inline public function render(g2:kha.graphics2.Graphics, ?xTmp:Float, ?yTmp:Float):Void
@@ -83,7 +84,7 @@ class FPStext
 	inline public function toggleFPS():Bool
 	{	
 		if(on) { on = false; return false; }
-		if(!on) { on = true; return true; } 
-		return null;
+		if(!on) { on = true; return true; }
+		 return true; 
 	}
 }
