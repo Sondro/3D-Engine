@@ -127,7 +127,7 @@ class MeshLoader
 	var water:Array<Object3d>;
 
 	public var marioAngle:Float = 0.0;
-	public var isDiRdated:Bool = false;
+	public var isDirUpdated:Bool = false;
 	public var curDir:String = '';
 	public var oldDir:String = '';
 
@@ -535,12 +535,12 @@ class MeshLoader
 		if(rotateCameraLeft||rotateJustCameraLeft) 
 		{ 
 			cameraAngle -= 0.02; 
-			isDiRdated = false;
+			isDirUpdated = false;
  		}
 		else if(rotateCameraRight||rotateJustCameraRight) 
 		{ 
 			cameraAngle += 0.02; 	
-			isDiRdated = false;
+			isDirUpdated = false;
 		}
 
 		if(left || right|| forward || backward)
@@ -550,13 +550,13 @@ class MeshLoader
 			{
 				dir.y += 1;
 				curDir = 'left';
-				isDiRdated = false;
+				isDirUpdated = false;
 			}
 			if(right) 
 			{
 				dir.y -= 1;
 				curDir = 'right';
-				isDiRdated = false;
+				isDirUpdated = false;
 			}
 			if(forward) 
 			{
@@ -571,48 +571,48 @@ class MeshLoader
 			}
 			else { controllerAngle = marioAngle; }
 
-		oldDir = curDir;
+			oldDir = curDir;
 
-		if(isDiRdated != true)
-		{
-			dir = dir.mult(10);
-		 
-			cs = Math.cos(-cameraAngle+PIdiv2);
-			sn = Math.sin(-cameraAngle+PIdiv2);
-			px = dir.x * cs-dir.y * sn;
-			py = dir.x * sn+dir.y * cs;
-
-			trace('cs: ' + cs + ' sn: ' + sn + ' px: ' + px + ' py: ' + py);
-
-			dir.x = px+vel.x() * 0.9;
-			dir.y = py+vel.z() * 0.9;
-		
-			if(dir.length > 20)
+			if(isDirUpdated != true)
 			{
-				dir.normalize();
-				dir = dir.mult(20);
-			}
-		}
-		else 
-		{
 				dir = dir.mult(10);
 		 
-			cs = Math.cos(-cameraAngle+PIdiv2);
-			sn = Math.sin(-cameraAngle+PIdiv2);
-			px = dir.x * cs-dir.y * sn;
-			py = dir.x * sn+dir.y * cs;
+				cs = Math.cos(-cameraAngle+PIdiv2);
+				sn = Math.sin(-cameraAngle+PIdiv2);
+				px = dir.x * cs-dir.y * sn;
+				py = dir.x * sn+dir.y * cs;
 
-			trace('cs: ' + cs + ' sn: ' + sn + ' px: ' + px + ' py: ' + py);
+				trace('cs: ' + cs + ' sn: ' + sn + ' px: ' + px + ' py: ' + py);
 
-			dir.x = px+vel.x() * 0.9;
-			dir.y = py+vel.z() * 0.9;
+				dir.x = px+vel.x() * 0.9;
+				dir.y = py+vel.z() * 0.9;
 		
-			if(dir.length > 20)
-			{
-				dir.normalize();
-				dir = dir.mult(20);
+				if(dir.length > 20)
+				{
+					dir.normalize();
+					dir = dir.mult(20);
+				}
 			}
-		}
+			else 
+			{
+				dir = dir.mult(10);
+		 
+				cs = Math.cos(-cameraAngle+PIdiv2);
+				sn = Math.sin(-cameraAngle+PIdiv2);
+				px = dir.x * cs-dir.y * sn;
+				py = dir.x * sn+dir.y * cs;
+
+				trace('cs: ' + cs + ' sn: ' + sn + ' px: ' + px + ' py: ' + py);
+
+				dir.x = px+vel.x() * 0.9;
+				dir.y = py+vel.z() * 0.9;
+		
+				if(dir.length > 20)
+				{
+					dir.normalize();
+					dir = dir.mult(20);
+				}
+			}
 
 			fallRigidBody.activate(true);
 			angle = Math.atan2(dir.y,dir.x);
@@ -628,7 +628,7 @@ class MeshLoader
 		if(jump && vel.y() <= 0)
 		{
 			jumpVec.setX(vel.x());
-			//jumpVec.setY(30);
+			//jumpVec.setY(jumpHeight);
 			jumpVec.setZ(vel.z());
 
 			fallRigidBody.setLinearVelocity(jumpVec);
@@ -643,7 +643,7 @@ class MeshLoader
 		fallVec.setZ(dir.y);
 
 		fallRigidBody.setLinearVelocity(fallVec);
-		isDiRdated = true;
+		isDirUpdated = true;
 	}
 
 
