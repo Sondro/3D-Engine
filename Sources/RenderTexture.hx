@@ -24,22 +24,38 @@ enum Chanel {
 class RenderTexture
 {
 	static var initialized:Bool = false;
-	static var indexBuffer:IndexBuffer;
-	static var vertexBuffer:VertexBuffer;
-	static var colorPipline:PipelineState;
-	static var depthPipline:PipelineState;
+	static var colorPipline:PipelineState = new PipelineState();
+	static var depthPipline:PipelineState = new PipelineState();
 	static var textureColorPos:TextureUnit;
 	static var textureDepthPos:TextureUnit;
 	static var transformColorPos:kha.graphics4.ConstantLocation;
 	static var transformDepthPos:kha.graphics4.ConstantLocation;
 
 	static var projection:FastMatrix4;
+	static var projection_ortho00:FastMatrix4 = FastMatrix4.orthogonalProjection(0, Main.width, Main.height, 0, -2, 1000);
+	static var projection_ortho01:FastMatrix4 = FastMatrix4.orthogonalProjection(0, Main.width, 0, Main.height, -2, 1000);
 
-	public static var structure;
-	public static var vertexes;
-	public static var indexes;
+	public static var structure:VertexStructure;
+	public static var vertexes:kha.arrays.Float32Array;
+	public static var indexes:kha.arrays.Uint32Array;
+
+	public static var verticies:Array<Float> = [];
+	public static var indicies:Array<Int> = [];
 
 	public static var g:kha.graphics4.Graphics;	
+	
+	static var vertexBuffer:VertexBuffer;
+	static var indexBuffer:IndexBuffer;
+
+	//static var vertexBuffer:VertexBuffer = new VertexBuffer(4, structure, Usage.StaticUsage);
+	//static var indexBuffer:IndexBuffer = new IndexBuffer(6, Usage.StaticUsage);
+
+
+	public static inline function updateProjections():Void 
+	{
+		projection_ortho00 = FastMatrix4.orthogonalProjection(0, Main.width, Main.height, 0, -2, 1000);
+		projection_ortho01 = FastMatrix4.orthogonalProjection(0, Main.width, 0, Main.height, -2, 1000);
+	}
 	
 	public static inline function renderTo(aTarget:Canvas,aImage:Image, aX:Float, aY:Float, aScale:Float,aChanel:Chanel,aClear:Bool)
 	{
@@ -49,7 +65,7 @@ class RenderTexture
 			structure.add("pos", VertexData.Float3);
 			structure.add("uv", VertexData.Float2);
 			
-			colorPipline = new PipelineState();
+			//colorPipline = new PipelineState();
 			colorPipline.inputLayout = [structure];
 			colorPipline.vertexShader = Shaders.texture_vert;
 			colorPipline.fragmentShader = Shaders.textureColor_frag;
@@ -58,7 +74,7 @@ class RenderTexture
 			textureColorPos = colorPipline.getTextureUnit("tex");
 			transformColorPos=colorPipline.getConstantLocation("mvp");
 			
-			depthPipline = new PipelineState();
+			//depthPipline = new PipelineState();
 			depthPipline.inputLayout = [structure];
 			depthPipline.vertexShader = Shaders.texture_vert;
 			depthPipline.fragmentShader = Shaders.textureDepth_frag;
@@ -69,6 +85,10 @@ class RenderTexture
 			vertexBuffer = new VertexBuffer(4, structure, Usage.StaticUsage);
 			indexBuffer = new IndexBuffer(6, Usage.StaticUsage);
 			
+			// Copy indices to index buffer
+    	//for (i in 0...indexes.length) { indexes[i] = indices[i]; }
+    	//indexBuffer.unlock();
+
 			indexes = indexBuffer.lock();
 			indexes.set(0, 0);
 			indexes.set(1, 1);
@@ -80,9 +100,9 @@ class RenderTexture
 			
 			if (aTarget.g4.renderTargetsInvertedY()) 
 			{
-				projection = FastMatrix4.orthogonalProjection(0, Main.width, Main.height, 0, -2, 1000);
+				projection = projection_ortho00;
 			} else {
-				projection = FastMatrix4.orthogonalProjection(0, Main.width, 0, Main.height, -2, 1000);
+				projection = projection_ortho01;
 			}
 		}
 		
