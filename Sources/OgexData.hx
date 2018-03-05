@@ -5,7 +5,8 @@ using StringTools;
 // OpenGEX parser
 // http://opengex.org
 
-class Container {
+class Container 
+{
 
 	public var name:String;
 	public var children:Array<Node> = [];
@@ -13,7 +14,8 @@ class Container {
 	public inline function new() {}
 }
 
-class OgexData extends Container {
+class OgexData extends Container 
+{
 
 	public var metrics:Array<Metric> = [];
 	public var geometryObjects:Array<GeometryObject> = [];
@@ -23,36 +25,79 @@ class OgexData extends Container {
 
 	public var file:StringInput;
 
-	public function new(data:String) {
+////////////////////////////////////////////////////////////
+	public var strArr:Array<String> = [];
+	public var str:String = '';
+	public var str2:String = '';
+	public var offset:Int = 0;
+
+	public var metric:Metric;
+	public var node:Node;
+	public var geoObject:GeometryObject;
+
+	public var key:Key;
+	public var mesh:Mesh;
+	
+	public var skin:Skin;
+	public var skel:Skeleton;
+	public var boneRefArray:BoneRefArray;
+	public var transArray:Array<Transform>;
+	public var trans:Transform;
+
+	public var boneCountArray:BoneCountArray;
+	public var boneWeightArray:BoneWeightArray;
+	public var boneIndexArray:BoneIndexArray;
+
+	public var vertexArray:VertexArray;
+	public var indexArray:IndexArray;
+
+	public var lightObject:LightObject;
+	public var color:Color;
+	public var texture:Texture;
+
+	public var atten:Atten;
+	public var param:Param;
+	public var cameraObject:CameraObject;
+	public var material:Material;
+
+	public var anim:Animation;
+	public var track:Track;
+	public var ogexTime:OgexTime;
+	public var value:Value;
+////////////////////////////////////////////////////////////
+
+	public function new(data:String) 
+	{
 		super();
-
 		file = new StringInput(data);
-		var s:Array<String>;
 
-		try {
-			while (true) {
-				s = readLine();
-				switch(s[0]) {
+		try 
+		{
+			while (true) 
+			{
+				strArr = readLine();
+				switch(strArr[0]) 
+				{
 					case "Metric":
-						metrics.push(parseMetric(s));
+						metrics.push(parseMetric(strArr));
 					case "Node":
-						children.push(parseNode(s, this));
+						children.push(parseNode(strArr, this));
 					case "GeometryNode":
-						children.push(parseGeometryNode(s, this));
+						children.push(parseGeometryNode(strArr, this));
 					case "LightNode":
-						children.push(parseLightNode(s, this));
+						children.push(parseLightNode(strArr, this));
 					case "CameraNode":
-						children.push(parseCameraNode(s, this));
+						children.push(parseCameraNode(strArr, this));
 					case "BoneNode":
-						children.push(parseBoneNode(s, this));
+						children.push(parseBoneNode(strArr, this));
 					case "GeometryObject":
-						geometryObjects.push(parseGeometryObject(s));
+						geometryObjects.push(parseGeometryObject(strArr));
 					case "LightObject":
-						lightObjects.push(parseLightObject(s));
+						lightObjects.push(parseLightObject(strArr));
 					case "CameraObject":
-						cameraObjects.push(parseCameraObject(s));
+						cameraObjects.push(parseCameraObject(strArr));
 					case "Material":
-						materials.push(parseMaterial(s));
+						materials.push(parseMaterial(strArr));
 				}
 			}
 		}
@@ -62,18 +107,16 @@ class OgexData extends Container {
 	}
 
 	public inline function getNode(name:String):Node { 
-		var res:Node = null; 
 		traverseNodes(function(it:Node) { 
-			if (it.name == name) { res = it; }
+			if (it.name == name) { node = it; }
 		});
-		return res; 
+		return node; 
 	}
 	public inline function getNodeBy(ref:String):Node { 
-		var res:Node = null; 
 		traverseNodes(function(it:Node) { 
-			if (it.ref == ref) { res = it; }
+			if (it.ref == ref) { node = it; }
 		});
-		return res; 
+		return node; 
 	}
 
 	public inline function traverseNodes(callback:Node->Void) {
@@ -119,54 +162,54 @@ class OgexData extends Container {
 
 	// Parsing
 	inline function readLine():Array<String> {
-		var line = file.readLine();
-		line = StringTools.trim(line);
-		var str = line.split(" ");
-		return str;
+		str = file.readLine();
+		str = StringTools.trim(str);
+		strArr = str.split(" ");
+		return strArr;
 	}
 
 	inline function readLine2():String {
-		var line = file.readLine();
-		line = StringTools.trim(line);
-		return line;
+		str = file.readLine();
+		str = StringTools.trim(str);
+		return str;
 	}
 
-	inline function parseMetric(s:Array<String>):Metric {
-		var metric = new Metric();
-		metric.key = s[3].split('"')[1];
-		var val = s[5].split("{")[1].split("}")[0];
-		if (s[4] == "{float") {
-			metric.value = Std.parseFloat(val);
+	inline function parseMetric(strArr:Array<String>):Metric {
+		metric = new Metric();
+		metric.key = strArr[3].split('"')[1];
+		str = strArr[5].split("{")[1].split("}")[0];
+		if (strArr[4] == "{float") {
+			metric.value = Std.parseFloat(str);
 		}
 		else {
-			metric.value = val.split('"')[1];
+			metric.value = str.split('"')[1];
 		}
 		return metric;
 	}
 
-	inline function parseNode(s:Array<String>, parent:Container):Node {
+	inline function parseNode(strArr:Array<String>, parent:Container):Node {
 		var n = new Node();
 		n.parent = parent;
-		n.ref = s[1];
+		n.ref = strArr[1];
 
 		while (true) {
-			s = readLine();
+			strArr = readLine();
 
-			switch(s[0]) {
+			switch(strArr[0]) {
 				case "Name":
-					n.name = parseName(s);
+					n.name = parseName(strArr);
 				case "Transform":
-					n.transform = parseTransform(s);
+					n.transform = parseTransform(strArr);
 				case "Node":
-					n.children.push(parseNode(s, n));
+					n.children.push(parseNode(strArr, n));
 				case "GeometryNode":
-					n.children.push(parseGeometryNode(s, n));
+					n.children.push(parseGeometryNode(strArr, n));
 				case "LightNode":
-					n.children.push(parseLightNode(s, n));
+					n.children.push(parseLightNode(strArr, n));
 				case "CameraNode":
-					n.children.push(parseCameraNode(s, n));
+					n.children.push(parseCameraNode(strArr, n));
 				case "BoneNode":
-					n.children.push(parseBoneNode(s, n));
+					n.children.push(parseBoneNode(strArr, n));
 				case "}":
 					break;
 			}
@@ -174,33 +217,33 @@ class OgexData extends Container {
 		return n;
 	}
 
-	inline function parseGeometryNode(s:Array<String>, parent:Container):GeometryNode {
+	inline function parseGeometryNode(strArr:Array<String>, parent:Container):GeometryNode {
 		var n = new GeometryNode();
 		n.parent = parent;
-		n.ref = s[1];
+		n.ref = strArr[1];
 
 		while (true) {
-			s = readLine();
+			strArr = readLine();
 
-			switch(s[0]) {
+			switch(strArr[0]) {
 				case "Name":
-					n.name = parseName(s);
+					n.name = parseName(strArr);
 				case "ObjectRef":
-					n.objectRefs.push(parseObjectRef(s));
+					n.objectRefs.push(parseObjectRef(strArr));
 				case "MaterialRef":
-					n.materialRefs.push(parseMaterialRef(s));
+					n.materialRefs.push(parseMaterialRef(strArr));
 				case "Transform":
-					n.transform = parseTransform(s);
+					n.transform = parseTransform(strArr);
 				case "Node":
-					n.children.push(parseNode(s, n));
+					n.children.push(parseNode(strArr, n));
 				case "GeometryNode":
-					n.children.push(parseGeometryNode(s, n));
+					n.children.push(parseGeometryNode(strArr, n));
 				case "LightNode":
-					n.children.push(parseLightNode(s, n));
+					n.children.push(parseLightNode(strArr, n));
 				case "CameraNode":
-					n.children.push(parseCameraNode(s, n));
+					n.children.push(parseCameraNode(strArr, n));
 				case "BoneNode":
-					n.children.push(parseBoneNode(s, n));
+					n.children.push(parseBoneNode(strArr, n));
 				case "}":
 					break;
 			}
@@ -208,31 +251,31 @@ class OgexData extends Container {
 		return n;
 	}
 
-	inline function parseLightNode(s:Array<String>, parent:Container):LightNode {
+	inline function parseLightNode(strArr:Array<String>, parent:Container):LightNode {
 		var n = new LightNode();
 		n.parent = parent;
-		n.ref = s[1];
+		n.ref = strArr[1];
 
 		while (true) {
-			s = readLine();
+			strArr = readLine();
 
-			switch(s[0]) {
+			switch(strArr[0]) {
 				case "Name":
-					n.name = parseName(s);
+					n.name = parseName(strArr);
 				case "ObjectRef":
-					n.objectRefs.push(parseObjectRef(s));
+					n.objectRefs.push(parseObjectRef(strArr));
 				case "Transform":
-					n.transform = parseTransform(s);
+					n.transform = parseTransform(strArr);
 				case "Node":
-					n.children.push(parseNode(s, n));
+					n.children.push(parseNode(strArr, n));
 				case "GeometryNode":
-					n.children.push(parseGeometryNode(s, n));
+					n.children.push(parseGeometryNode(strArr, n));
 				case "LightNode":
-					n.children.push(parseLightNode(s, n));
+					n.children.push(parseLightNode(strArr, n));
 				case "CameraNode":
-					n.children.push(parseCameraNode(s, n));
+					n.children.push(parseCameraNode(strArr, n));
 				case "BoneNode":
-					n.children.push(parseBoneNode(s, n));
+					n.children.push(parseBoneNode(strArr, n));
 				case "}":
 					break;
 			}
@@ -240,31 +283,31 @@ class OgexData extends Container {
 		return n;
 	}
 
-	inline function parseCameraNode(s:Array<String>, parent:Container):CameraNode {
+	inline function parseCameraNode(strArr:Array<String>, parent:Container):CameraNode {
 		var n = new CameraNode();
 		n.parent = parent;
-		n.ref = s[1];
+		n.ref = strArr[1];
 
 		while (true) {
-			s = readLine();
+			strArr = readLine();
 
-			switch(s[0]) {
+			switch(strArr[0]) {
 				case "Name":
-					n.name = parseName(s);
+					n.name = parseName(strArr);
 				case "ObjectRef":
-					n.objectRefs.push(parseObjectRef(s));
+					n.objectRefs.push(parseObjectRef(strArr));
 				case "Transform":
-					n.transform = parseTransform(s);
+					n.transform = parseTransform(strArr);
 				case "Node":
-					n.children.push(parseNode(s, n));
+					n.children.push(parseNode(strArr, n));
 				case "GeometryNode":
-					n.children.push(parseGeometryNode(s, n));
+					n.children.push(parseGeometryNode(strArr, n));
 				case "LightNode":
-					n.children.push(parseLightNode(s, n));
+					n.children.push(parseLightNode(strArr, n));
 				case "CameraNode":
-					n.children.push(parseCameraNode(s, n));
+					n.children.push(parseCameraNode(strArr, n));
 				case "BoneNode":
-					n.children.push(parseBoneNode(s, n));
+					n.children.push(parseBoneNode(strArr, n));
 				case "}":
 					break;
 			}
@@ -272,23 +315,23 @@ class OgexData extends Container {
 		return n;
 	}
 
-	inline function parseBoneNode(s:Array<String>, parent:Container):BoneNode {
+	inline function parseBoneNode(strArr:Array<String>, parent:Container):BoneNode {
 		var n = new BoneNode();
 		n.parent = parent;
-		n.ref = s[1];
+		n.ref = strArr[1];
 
 		while (true) {
-			s = readLine();
+			strArr = readLine();
 
-			switch(s[0]) {
+			switch(strArr[0]) {
 				case "Name":
-					n.name = parseName(s);
+					n.name = parseName(strArr);
 				case "Transform":
-					n.transform = parseTransform(s);
+					n.transform = parseTransform(strArr);
 				case "BoneNode":
-					n.children.push(parseBoneNode(s, n));
+					n.children.push(parseBoneNode(strArr, n));
 				case "Animation":
-					n.animation = parseAnimation(s);
+					n.animation = parseAnimation(strArr);
 				case "}":
 					break;
 			}
@@ -296,58 +339,58 @@ class OgexData extends Container {
 		return n;
 	}
 
-	function parseGeometryObject(s:Array<String>):GeometryObject {
-		var go = new GeometryObject();
-		go.ref = s[1].split("\t")[0];
+	function parseGeometryObject(strArr:Array<String>):GeometryObject {
+		geoObject = new GeometryObject();
+		geoObject.ref = strArr[1].split("\t")[0];
 		while (true) {
-			s = readLine();
+			strArr = readLine();
 
-			switch(s[0]) {
+			switch(strArr[0]) {
 				case "Mesh":
-					go.mesh = parseMesh(s);
+					geoObject.mesh = parseMesh(strArr);
 				case "}":
 					break;
 			}
 		}
-		return go;
+		return geoObject;
 	}
 
-	inline function parseMesh(s:Array<String>):Mesh {
-		var m = new Mesh();
-		m.primitive = s[3].split('"')[1];
+	inline function parseMesh(strArr:Array<String>):Mesh {
+		mesh = new Mesh();
+		mesh.primitive = strArr[3].split('"')[1];
 		while (true) {
-			s = readLine();
+			strArr = readLine();
 
-			switch(s[0]) {
+			switch(strArr[0]) {
 				case "VertexArray":
-					m.vertexArrays.push(parseVertexArray(s));
+					mesh.vertexArrays.push(parseVertexArray(strArr));
 				case "IndexArray":
-					m.indexArray = parseIndexArray(s);
+					mesh.indexArray = parseIndexArray(strArr);
 				case "Skin":
-					m.skin = parseSkin(s);
+					mesh.skin = parseSkin(strArr);
 				case "}":
 					break;
 			}
 		}
-		return m;
+		return mesh;
 	}
 
-	inline function parseSkin(s:Array<String>):Skin {
-		var skin = new Skin();
+	inline function parseSkin(strArr:Array<String>):Skin {
+		skin = new Skin();
 		while (true) {
-			s = readLine();
+			strArr = readLine();
 
-			switch(s[0]) {
+			switch(strArr[0]) {
 				case "Transform":
-					skin.transform = parseTransform(s);
+					skin.transform = parseTransform(strArr);
 				case "Skeleton":
-					skin.skeleton = parseSkeleton(s);
+					skin.skeleton = parseSkeleton(strArr);
 				case "BoneCountArray":
-					skin.boneCountArray = parseBoneCountArray(s);
+					skin.boneCountArray = parseBoneCountArray(strArr);
 				case "BoneIndexArray":
-					skin.boneIndexArray = parseBoneIndexArray(s);
+					skin.boneIndexArray = parseBoneIndexArray(strArr);
 				case "BoneWeightArray":
-					skin.boneWeightArray = parseBoneWeightArray(s);
+					skin.boneWeightArray = parseBoneWeightArray(strArr);
 				case "}":
 					break;
 			}
@@ -355,16 +398,16 @@ class OgexData extends Container {
 		return skin;
 	}
 
-	inline function parseSkeleton(s:Array<String>):Skeleton {
-		var skel = new Skeleton();
+	inline function parseSkeleton(strArr:Array<String>):Skeleton {
+		skel = new Skeleton();
 		while (true) {
-			s = readLine();
+			strArr = readLine();
 
-			switch(s[0]) {
+			switch(strArr[0]) {
 				case "BoneRefArray":
-					skel.boneRefArray = parseBoneRefArray(s);
+					skel.boneRefArray = parseBoneRefArray(strArr);
 				case "Transform":
-					skel.transforms = parseTransformArray(s);
+					skel.transforms = parseTransformArray(strArr);
 				case "}":
 					break;
 			}
@@ -372,348 +415,379 @@ class OgexData extends Container {
 		return skel;
 	}
 
-	inline function parseBoneRefArray(s:Array<String>):BoneRefArray {
-		var bra = new BoneRefArray();
+	inline function parseBoneRefArray(strArr:Array<String>):BoneRefArray {
+		boneRefArray = new BoneRefArray();
 		readLine2(); readLine2(); readLine2();
-		var ss = readLine2();
-		ss = StringTools.replace(ss, " ", "");
-		bra.refs = ss.split(",");
+		str = readLine2();
+		str = StringTools.replace(str, " ", "");
+		boneRefArray.refs = str.split(",");
 		readLine2(); readLine2();
-		return bra;
+		return boneRefArray;
 	}
 
-	inline function parseTransformArray(s:Array<String>):Array<Transform> {
-		var bra = new Array<Transform>();
-		readLine2(); readLine2(); readLine2();
-		while (true) {
-			var va =new Transform();
-			var ss = readLine2();
-			ss = StringTools.replace(ss, "{", "");
-			ss = StringTools.replace(ss, "}", "");
-			s = ss.split(",");
-			var offset = s[s.length - 1] == "" ? 1 : 0;
-			for (i in 0...s.length - offset) va.values.push(Std.parseFloat(s[i]));
-			bra.push(va);
-			if (offset == 0) break;
-		}
-		readLine2(); readLine2();
-		return bra;
-	}
-
-	inline function parseBoneCountArray(s:Array<String>):BoneCountArray {
-		var bca = new BoneCountArray();
+	inline function parseTransformArray(strArr:Array<String>):Array<Transform> {
+		transArray = new Array<Transform>();
 		readLine2(); readLine2(); readLine2();
 		while (true) {
-			var ss = readLine2();
-			ss = StringTools.replace(ss, " ", "");
-			s = ss.split(",");
-			var offset = s[s.length - 1] == "" ? 1 : 0;
-			for (i in 0...s.length - offset) bca.values.push(Std.parseInt(s[i]));
-			if (offset == 0) break;
+			trans = new Transform();
+			str = readLine2();
+			str = StringTools.replace(str, "{", "");
+			str = StringTools.replace(str, "}", "");
+			strArr = str.split(",");
+			offset = strArr[strArr.length - 1] == "" ? 1 : 0;
+			for (i in 0...strArr.length - offset) trans.values.push(Std.parseFloat(strArr[i]));
+			transArray.push(trans);
+			if (offset == 0) { break; }
 		}
 		readLine2(); readLine2();
-		return bca;
+		return transArray;
 	}
 
-	inline function parseBoneIndexArray(s:Array<String>):BoneIndexArray {
-		var bia = new BoneIndexArray();
+	inline function parseBoneCountArray(strArr:Array<String>):BoneCountArray {
+		boneCountArray = new BoneCountArray();
 		readLine2(); readLine2(); readLine2();
-		while (true) {
-			var ss = readLine2();
-			ss = StringTools.replace(ss, " ", "");
-			s = ss.split(",");
-			var offset = s[s.length - 1] == "" ? 1 : 0;
-			for (i in 0...s.length - offset) bia.values.push(Std.parseInt(s[i]));
-			if (offset == 0) break;
+		while (true) 
+		{
+			str = readLine2();
+			str = StringTools.replace(str, " ", "");
+			strArr = str.split(",");
+			offset = strArr[strArr.length - 1] == "" ? 1 : 0;
+			for (i in 0...strArr.length - offset) { boneCountArray.values.push(Std.parseInt(strArr[i])); }
+			if (offset == 0) { break; }
 		}
 		readLine2(); readLine2();
-		return bia;
+		return boneCountArray;
 	}
 
-	inline function parseBoneWeightArray(s:Array<String>):BoneWeightArray {
-		var bwa = new BoneWeightArray();
+	inline function parseBoneIndexArray(strArr:Array<String>):BoneIndexArray {
+		boneIndexArray = new BoneIndexArray();
 		readLine2(); readLine2(); readLine2();
-		while (true) {
-			var ss = readLine2();
-			ss = StringTools.replace(ss, " ", "");
-			s = ss.split(",");
-			var offset = s[s.length - 1] == "" ? 1 : 0;
-			for (i in 0...s.length - offset) bwa.values.push(Std.parseFloat(s[i]));
-			if (offset == 0) break;
+		while (true) 
+		{
+			str = readLine2();
+			str = StringTools.replace(str, " ", "");
+			strArr = str.split(",");
+			offset = strArr[strArr.length - 1] == "" ? 1 : 0;
+			for (i in 0...strArr.length - offset) { boneIndexArray.values.push(Std.parseInt(strArr[i])); }
+			if (offset == 0) { break; }
 		}
 		readLine2(); readLine2();
-		return bwa;
+		return boneIndexArray;
 	}
 
-	inline function parseVertexArray(s:Array<String>):VertexArray {
-		var va = new VertexArray();
-		va.attrib = s[3].split('"')[1];
+	inline function parseBoneWeightArray(strArr:Array<String>):BoneWeightArray {
+		boneWeightArray = new BoneWeightArray();
+		readLine2(); readLine2(); readLine2();
+		while (true) 
+		{
+			str = readLine2();
+			str = StringTools.replace(str, " ", "");
+			strArr = str.split(",");
+			offset = strArr[strArr.length - 1] == "" ? 1 : 0;
+			for (i in 0...strArr.length - offset) { boneWeightArray.values.push(Std.parseFloat(strArr[i])); }
+			if (offset == 0) { break; }
+		}
+		readLine2(); readLine2();
+		return boneWeightArray;
+	}
+
+	inline function parseVertexArray(strArr:Array<String>):VertexArray {
+		vertexArray = new VertexArray();
+		vertexArray.attrib = strArr[3].split('"')[1];
 		readLine2();
-		var ss = readLine2();
-		va.size = Std.parseInt(ss.split("[")[1].split("]")[0]);
+		str = readLine2();
+		vertexArray.size = Std.parseInt(str.split("[")[1].split("]")[0]);
 		readLine2();
 		
-		while (true) {
+		while (true) 
+		{
 			// TODO: unify float[] {} parsing
-			ss = readLine2();
-			ss = StringTools.replace(ss, "{", "");
-			ss = StringTools.replace(ss, "}", "");
-			s = ss.split(",");
-			var offset = s[s.length - 1] == "" ? 1 : 0;
-			for (i in 0...s.length - offset) va.values.push(Std.parseFloat(s[i]));
+			str = readLine2();
+			str = StringTools.replace(str, "{", "");
+			str = StringTools.replace(str, "}", "");
+			strArr = str.split(",");
+			offset = strArr[strArr.length - 1] == "" ? 1 : 0;
+			for (i in 0...strArr.length - offset) { vertexArray.values.push(Std.parseFloat(strArr[i])); }
+			if (offset == 0) { break; }
+		}
+		readLine2(); readLine2();
+		return vertexArray;
+	}
+
+	inline function parseIndexArray(strArr:Array<String>):IndexArray {
+		indexArray = new IndexArray();
+		readLine2();
+		str = readLine2();
+		indexArray.size = Std.parseInt(str.split("[")[1].split("]")[0]);
+		readLine2();
+		while (true) 
+		{
+			str = readLine2();
+			str = StringTools.replace(str, "{", "");
+			str = StringTools.replace(str, "}", "");
+			strArr = str.split(",");
+			offset = strArr[strArr.length - 1] == "" ? 1 : 0;
+			for (i in 0...strArr.length - offset) { indexArray.values.push(Std.parseInt(strArr[i])); }
 			if (offset == 0) break;
 		}
 		readLine2(); readLine2();
-		return va;
+		return indexArray;
 	}
 
-	inline function parseIndexArray(s:Array<String>):IndexArray {
-		var ia = new IndexArray();
-		readLine2();
-		var ss = readLine2();
-		ia.size = Std.parseInt(ss.split("[")[1].split("]")[0]);
-		readLine2();
-		
-		while (true) {
-			ss = readLine2();
-			ss = StringTools.replace(ss, "{", "");
-			ss = StringTools.replace(ss, "}", "");
-			s = ss.split(",");
-			var offset = s[s.length - 1] == "" ? 1 : 0;
-			for (i in 0...s.length - offset) ia.values.push(Std.parseInt(s[i]));
-			if (offset == 0) break;
-		}
-		readLine2(); readLine2();
-		return ia;
-	}
+	inline function parseLightObject(strArr:Array<String>):LightObject 
+	{
+		lightObject = new LightObject();
+		lightObject.ref = strArr[1];
+		lightObject.type = strArr[4].split('"')[1];
+		while (true) 
+		{
+			strArr = readLine();
 
-	inline function parseLightObject(s:Array<String>):LightObject {
-		var lo = new LightObject();
-		lo.ref = s[1];
-		lo.type = s[4].split('"')[1];
-		while (true) {
-			s = readLine();
-
-			switch(s[0]) {
+			switch(strArr[0]) 
+			{
 				case "Color":
-					lo.color = parseColor(s);
+					lightObject.color = parseColor(strArr);
 				case "Atten":
-					lo.atten = parseAtten(s);
+					lightObject.atten = parseAtten(strArr);
 				case "}":
 					break;
 			}
 		}
-		return lo;
+		return lightObject;
 	}
 
-	inline function parseColor(s:Array<String>):Color {
-		var col = new Color();
-		col.attrib = s[3].split('"')[1];
-		for (i in 5...s.length) {
-			var ss = s[i];
-			ss = StringTools.replace(ss, "{", "");
-			ss = StringTools.replace(ss, "}", "");
-			ss = StringTools.replace(ss, ",", "");
-			col.values.push(Std.parseFloat(ss));
+	inline function parseColor(strArr:Array<String>):Color 
+	{
+		color = new Color();
+		color.attrib = strArr[3].split('"')[1];
+		for (i in 5...strArr.length) 
+		{
+			str = strArr[i];
+			str = StringTools.replace(str, "{", "");
+			str = StringTools.replace(str, "}", "");
+			str = StringTools.replace(str, ",", "");
+			color.values.push(Std.parseFloat(str));
 		}
-		return col;
+		return color;
 	}
-	inline function parseTexture(s:Array<String>):Texture {
-		var texture = new Texture();
-		texture.attrib = s[3].split('"')[1];
+	inline function parseTexture(strArr:Array<String>):Texture 
+	{
+		texture = new Texture();
+		texture.attrib = strArr[3].split('"')[1];
 		readLine();
-		s = readLine();
-		var ss = s[1];
-		ss = StringTools.replace(ss, "{", "");
-		ss = StringTools.replace(ss, "}", "");
-		ss = StringTools.replace(ss, "\"", "");
-		texture.path=ss;
+		strArr = readLine();
+		str = strArr[1];
+		str = StringTools.replace(str, "{", "");
+		str = StringTools.replace(str, "}", "");
+		str = StringTools.replace(str, "\"", "");
+		texture.path=str;
 		
 		return texture;
 	}
 
-	inline function parseAtten(s:Array<String>):Atten {
-		var a = new Atten();
-		a.curve = s[3].split('"')[1];
-		while (true) {
-			s = readLine();
+	inline function parseAtten(strArr:Array<String>):Atten 
+	{
+		atten = new Atten();
+		atten.curve = strArr[3].split('"')[1];
+		while(true) 
+		{
+			strArr = readLine();
 
-			switch(s[0]) {
+			switch(strArr[0]) 
+			{
 				case "Param":
-					a.params.push(parseParam(s));
+					atten.params.push(parseParam(strArr));
 				case "}":
 					break;
 			}
 		}
-		return a;
+		return atten;
 	}
 
-	inline function parseParam(s:Array<String>):Param {
-		var p = new Param();
-		p.attrib = s[3].split('"')[1];
-		var ss = s[5];
-		ss = StringTools.replace(ss, "{", "");
-		ss = StringTools.replace(ss, "}", "");
-		p.value = Std.parseFloat(ss);
-		return p;
+	inline function parseParam(strArr:Array<String>):Param 
+	{
+		param = new Param();
+		param.attrib = strArr[3].split('"')[1];
+		str = strArr[5];
+		str = StringTools.replace(str, "{", "");
+		str = StringTools.replace(str, "}", "");
+		param.value = Std.parseFloat(str);
+		return param;
 	}
 
-	inline function parseCameraObject(s:Array<String>):CameraObject {
-		var co = new CameraObject();
-		co.ref = s[1].split("\t")[0];
-		while (true) {
-			s = readLine();
-
-			switch(s[0]) {
+	inline function parseCameraObject(strArr:Array<String>):CameraObject 
+	{
+		cameraObject = new CameraObject();
+		cameraObject.ref = strArr[1].split("\t")[0];
+		while (true) 
+		{
+			strArr = readLine();
+			switch(strArr[0]) 
+			{
 				case "Param":
-					co.params.push(parseParam(s));
+					cameraObject.params.push(parseParam(strArr));
 				case "}":
 					break;
 			}
 		}
-		return co;
+		return cameraObject;
 	}
 
-	inline function parseMaterial(s:Array<String>):Material {
-		var mat = new Material();
-		mat.ref = s[1];
+	inline function parseMaterial(strArr:Array<String>):Material 
+	{
+		material = new Material();
+		material.ref = strArr[1];
 		while (true) {
-			s = readLine();
+			strArr = readLine();
 
-			switch(s[0]) {
+			switch(strArr[0]) {
 				case "Name":
-					mat.name = parseName(s);
+					material.name = parseName(strArr);
 				case "Color":
-					mat.colors.push(parseColor(s));
+					material.colors.push(parseColor(strArr));
 				case "Texture":
-					mat.texture.push(parseTexture(s));
+					material.texture.push(parseTexture(strArr));
 				case "Param":
-					mat.params.push(parseParam(s));
+					material.params.push(parseParam(strArr));
 				case "}":
 					break;
 			}
 		}
-		return mat;
+		return material;
 	}
 
-	inline function parseName(s:Array<String>):String {
-		return s[2].split('"')[1];
+	inline function parseName(strArr:Array<String>):String {
+		return strArr[2].split('"')[1];
 	}
 
-	inline function parseObjectRef(s:Array<String>):String {
-		return s[2].split("}")[0].substr(1);
+	inline function parseObjectRef(strArr:Array<String>):String {
+		return strArr[2].split("}")[0].substr(1);
 	}
 
-	inline function parseMaterialRef(s:Array<String>):String {
-		return s[5].split("}")[0].substr(1);
+	inline function parseMaterialRef(strArr:Array<String>):String {
+		return strArr[5].split("}")[0].substr(1);
 	}
 
-	inline function parseTransform(s:Array<String>):Transform {
+	inline function parseTransform(strArr:Array<String>):Transform {
 		// TODO: Correct value parsing
-		var t = new Transform();
-		if (s.length > 1) t.ref = s[1];
+		trans = new Transform();
+		if (strArr.length > 1) { trans.ref = strArr[1]; }
 		readLine2(); readLine2(); readLine2();
-		var ss = readLine2().substr(1);
-		ss += readLine2();
-		ss += readLine2();
-		var sss = readLine2();
-		ss += sss.substr(0, sss.length - 2);
-		s = ss.split(",");
-		for (i in 0...s.length) {
+		str = readLine2().substr(1);
+		str += readLine2();
+		str += readLine2();
+		var str2 = readLine2();
+		str += str2.substr(0, str2.length - 2);
+		strArr = str.split(",");
+		for (i in 0...strArr.length) 
+		{
 			var j = Std.int(i / 4);
 			var k = i % 4;
-			t.values.push(Std.parseFloat(s[j + k * 4]));
+			trans.values.push(Std.parseFloat(strArr[j + k * 4]));
 		}
 		readLine2(); readLine2();
-		return t;
+		return trans;
 	}
 
-	inline function parseAnimation(s:Array<String>):Animation {
-		var a = new Animation();
-		while (true) {
-			s = readLine();
-
-			switch(s[0]) {
+	inline function parseAnimation(strArr:Array<String>):Animation 
+	{
+		anim = new Animation();
+		while (true) 
+		{
+			strArr = readLine();
+			switch(strArr[0]) {
 				case "Track":
-					a.track = parseTrack(s);
+					anim.track = parseTrack(strArr);
 				case "}":
 					break;
 			}
 		}
-		return a;
+		return anim;
 	}
 
-	inline function parseTrack(s:Array<String>):Track {
-		var t = new Track();
-		t.target = s[3].substr(0, s[3].length - 2);
-		while (true) {
-			s = readLine();
-
-			switch(s[0]) {
+	inline function parseTrack(strArr:Array<String>):Track 
+	{
+		track = new Track();
+		track.target = strArr[3].substr(0, strArr[3].length - 2);
+		while (true) 
+		{
+			strArr = readLine();
+			switch(strArr[0]) 
+			{
 				case "Time":
-					t.time = parseTime(s);
+					track.time = parseTime(strArr);
 				case "Value":
-					t.value = parseValue(s);
+					track.value = parseValue(strArr);
 				case "}":
 					break;
 			}
 		}
-		return t;
+		return track;
 	}
 
-	inline function parseTime(s:Array<String>):OgexTime {
-		var t = new OgexTime();
-		while (true) {
-			s = readLine();
+	inline function parseTime(strArr:Array<String>):OgexTime 
+	{
+		ogexTime = new OgexTime();
+		while (true) 
+		{
+			strArr = readLine();
 
-			switch(s[0]) {
+			switch(strArr[0]) 
+			{
 				case "Key":
-					t.key = parseKey(s);
+					ogexTime.key = parseKey(strArr);
 				case "}":
 					break;
 			}
 		}
-		return t;
+		return ogexTime;
 	}
 
-	inline function parseValue(s:Array<String>):Value {
-		var v = new Value();
-		while (true) {
-			s = readLine();
-
-			switch(s[0]) {
+	inline function parseValue(strArr:Array<String>):Value 
+	{
+		value = new Value();
+		while (true) 
+		{
+			strArr = readLine();
+			switch(strArr[0]) 
+			{
 				case "Key":
-					v.key = parseKey(s);
+					value.key = parseKey(strArr);
 				case "}":
 					break;
 			}
 		}
-		return v;
+		return value;
 	}
 
-	inline function parseKey(s:Array<String>):Key {
-		var k = new Key();
-		if (s.length > 2) { // One line
-			k.values.push(Std.parseFloat(s[2].substr(1)));
-			for (i in 3...s.length - 2) {
-				k.values.push(Std.parseFloat(s[i]));
+	inline function parseKey(strArr:Array<String>):Key 
+	{
+		key = new Key();
+		if (strArr.length > 2) 
+		{ // One str
+			key.values.push(Std.parseFloat(strArr[2].substr(1)));
+			for (i in 3...strArr.length - 2) 
+			{
+				key.values.push(Std.parseFloat(strArr[i]));
 			}
-			k.values.push(Std.parseFloat(s[s.length - 1].substr(0, s[s.length - 1].length - 3)));
+			key.values.push(Std.parseFloat(strArr[strArr.length - 1].substr(0, strArr[strArr.length - 1].length - 3)));
 		}
-		else { // Multi line
+		else 
+		{ // Multi str
 			readLine2(); readLine2(); readLine2();
-			while (true) {
-				var ss = readLine2();
-				ss = StringTools.replace(ss, "{", "");
-				ss = StringTools.replace(ss, "}", "");
-				s = ss.split(",");
-				var offset = s[s.length - 1] == "" ? 1 : 0;
-				for (i in 0...s.length - offset) k.values.push(Std.parseFloat(s[i]));
-				if (offset == 0) break;
+			while (true) 
+			{
+				str = readLine2();
+				str = StringTools.replace(str, "{", "");
+				str = StringTools.replace(str, "}", "");
+				strArr = str.split(",");
+				offset = strArr[strArr.length - 1] == "" ? 1 : 0;
+				for (i in 0...strArr.length - offset) { key.values.push(Std.parseFloat(strArr[i])); }
+				if (offset == 0) { break; }
 			}
 			readLine2();readLine2();
 		}
-		return k;
+		return key;
 	}
 }
 
