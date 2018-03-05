@@ -14,6 +14,6 @@
 - Esc			  :: exit fullscreen mode (will probably change)
 ### To-Do:
 
-[<strong>+</strong>] Break-out input into Inputter.hx (class) from MeshLoader.hx
-[<strong>-</strong>] Remove lag bottleneck
-[<strong>+</strong>] Break-out render/update from MeshLoader.hx
+<strong>[+]</strong> Break-out input into Inputter.hx (class) from MeshLoader.hx
+<strong>[-]</strong> Remove lag bottleneck
+<strong>[+]</strong> Break-out render/update from MeshLoader.hx
