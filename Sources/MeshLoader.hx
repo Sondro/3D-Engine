@@ -167,6 +167,7 @@ class MeshLoader
 	public var dynamicsWorld:BtDiscreteDynamicsWorld;
 //---------------------------------------------------------------------------	
 	//Jump/Fall
+//---------------------------------------------------------------------------		
 	public var fallRigidBody:BtRigidBody;
 	
 	public var jumpHeight = 30;
@@ -182,6 +183,10 @@ class MeshLoader
 	public var g2:kha.graphics2.Graphics;
 	public var loaded:Int = 0;		
 	public var fontSize:Int = 64;
+	public var loadStr:String = 'Loading... ';
+	public var extractStr:String = 'Extracting Meshes... ';
+
+
 	public var fontColor:kha.Color = kha.Color.White;
 
 	public inline function new() { Assets.loadFont("mainfont",onFontloaded); }
@@ -234,7 +239,7 @@ class MeshLoader
 //---------------------------------------------------------------------------
 		level = MeshExtractor.extract(data,null);
 //---------------------------------------------------------------------------
-	//Water setup
+// Water setup
 //---------------------------------------------------------------------------
 	
 		var dataWater = new OgexData(Assets.blobs.water_ogex.toString());
@@ -567,7 +572,6 @@ class MeshLoader
 
 		if(left || right|| forward || backward)
 		{	
-
 			if(left) 
 			{
 				dir.y += 1;
@@ -767,7 +771,7 @@ class MeshLoader
 
 	public inline function render(frame:Framebuffer): Void 
 	{	
-		if(started) 
+		if(loaded >= 100) 
 		{	
 			time = Scheduler.realTime();
 			timeElapsed  += time - lastTime;
@@ -929,33 +933,37 @@ class MeshLoader
 
 			RenderTexture.renderTo(frame,finalTarget,0,0,1,RenderTexture.Chanel.Color,true);
 
-		}else 
-		if(fontLoaded)
+		}
+		else if(fontLoaded)
 		{
-			g2 = frame.g2;
+			//g2.transformation = kha.math.FastMatrix3.scale(2,2); //50%
+			if(loaded == 0) 
+			{
+				g2 = frame.g2;
+				g2.font = loadFont;
+				g2.fontSize = fontSize;
+				g2.color = fontColor;
+			}
 
+			loaded = Std.int(Assets.progress * 100);
+			
 			g2.begin(true);	
 			
-			//g2.transformation = kha.math.FastMatrix3.scale(2,2); //50%
-			g2.font = loadFont;
-			g2.fontSize = fontSize;
-			g2.color = fontColor;
-			var loadStr:String = 'Loading... ';
-			var extractStr:String = 'Extracting... ';
-			loadCounter = (loadCounter++)%4;
-			loaded = Std.int(Assets.progress * 100);
-
-			if(startExtracting) { g2.drawString(extractStr, (Main.width/2) - (extractStr.length) * (g2.fontSize/6),(Main.height/2.5)-(g2.fontSize/2)); }
+			if(startExtracting) 
+			{ 
+				g2.drawString(loadStr + loaded +"%", (Main.width/2) - (loadStr.length + 6) * (g2.fontSize/6),(Main.height/2.5)-(g2.fontSize/2));
+				g2.drawString(extractStr, (Main.width/2) - (extractStr.length) * (g2.fontSize/6),(Main.height/2)-(g2.fontSize/2)); 
+			}
 			else { g2.drawString(loadStr + loaded +"%", (Main.width/2) - (loadStr.length + 6) * (g2.fontSize/6),(Main.height/2.5)-(g2.fontSize/2)); }
 			//else { g2.drawString(loadStr + loaded +"%", (Main.width/2) - (loadStr.length + 3) * (g2.fontSize/6),(Main.height/2)-(g2.fontSize/2)); }
-
+			
 			g2.end();
 		}	
-
+		
 	}
 
 	var miniCharAnimation = ['/','-','\"','|'];
-	var loadCounter:Int = 0;
+	//var loadCounter:Int = 0;
 	var fontLoaded:Bool;
 	var loadFont:kha.Font;
 	var startExtracting:Bool;
