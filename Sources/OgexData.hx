@@ -355,13 +355,16 @@ class OgexData extends Container
 		return geoObject;
 	}
 
-	inline function parseMesh(strArr:Array<String>):Mesh {
+	inline function parseMesh(strArr:Array<String>):Mesh 
+	{
 		mesh = new Mesh();
 		mesh.primitive = strArr[3].split('"')[1];
-		while (true) {
+		while (true) 
+		{
 			strArr = readLine();
 
-			switch(strArr[0]) {
+			switch(strArr[0]) 
+			{
 				case "VertexArray":
 					mesh.vertexArrays.push(parseVertexArray(strArr));
 				case "IndexArray":
@@ -375,12 +378,15 @@ class OgexData extends Container
 		return mesh;
 	}
 
-	inline function parseSkin(strArr:Array<String>):Skin {
+	inline function parseSkin(strArr:Array<String>):Skin 
+	{
 		skin = new Skin();
-		while (true) {
+		while (true) 
+		{
 			strArr = readLine();
 
-			switch(strArr[0]) {
+			switch(strArr[0]) 
+			{
 				case "Transform":
 					skin.transform = parseTransform(strArr);
 				case "Skeleton":
@@ -398,12 +404,15 @@ class OgexData extends Container
 		return skin;
 	}
 
-	inline function parseSkeleton(strArr:Array<String>):Skeleton {
+	inline function parseSkeleton(strArr:Array<String>):Skeleton 
+	{
 		skel = new Skeleton();
-		while (true) {
+		while (true) 
+		{
 			strArr = readLine();
 
-			switch(strArr[0]) {
+			switch(strArr[0]) 
+			{
 				case "BoneRefArray":
 					skel.boneRefArray = parseBoneRefArray(strArr);
 				case "Transform":
@@ -425,10 +434,12 @@ class OgexData extends Container
 		return boneRefArray;
 	}
 
-	inline function parseTransformArray(strArr:Array<String>):Array<Transform> {
+	inline function parseTransformArray(strArr:Array<String>):Array<Transform> 
+	{
 		transArray = new Array<Transform>();
 		readLine2(); readLine2(); readLine2();
-		while (true) {
+		while (true) 
+		{
 			trans = new Transform();
 			str = readLine2();
 			str = StringTools.replace(str, "{", "");
@@ -443,7 +454,8 @@ class OgexData extends Container
 		return transArray;
 	}
 
-	inline function parseBoneCountArray(strArr:Array<String>):BoneCountArray {
+	inline function parseBoneCountArray(strArr:Array<String>):BoneCountArray 
+	{
 		boneCountArray = new BoneCountArray();
 		readLine2(); readLine2(); readLine2();
 		while (true) 
@@ -459,7 +471,8 @@ class OgexData extends Container
 		return boneCountArray;
 	}
 
-	inline function parseBoneIndexArray(strArr:Array<String>):BoneIndexArray {
+	inline function parseBoneIndexArray(strArr:Array<String>):BoneIndexArray 
+	{
 		boneIndexArray = new BoneIndexArray();
 		readLine2(); readLine2(); readLine2();
 		while (true) 
@@ -475,7 +488,8 @@ class OgexData extends Container
 		return boneIndexArray;
 	}
 
-	inline function parseBoneWeightArray(strArr:Array<String>):BoneWeightArray {
+	inline function parseBoneWeightArray(strArr:Array<String>):BoneWeightArray 
+	{
 		boneWeightArray = new BoneWeightArray();
 		readLine2(); readLine2(); readLine2();
 		while (true) 
@@ -491,7 +505,8 @@ class OgexData extends Container
 		return boneWeightArray;
 	}
 
-	inline function parseVertexArray(strArr:Array<String>):VertexArray {
+	inline function parseVertexArray(strArr:Array<String>):VertexArray 
+	{
 		vertexArray = new VertexArray();
 		vertexArray.attrib = strArr[3].split('"')[1];
 		readLine2();
@@ -514,7 +529,8 @@ class OgexData extends Container
 		return vertexArray;
 	}
 
-	inline function parseIndexArray(strArr:Array<String>):IndexArray {
+	inline function parseIndexArray(strArr:Array<String>):IndexArray 
+	{
 		indexArray = new IndexArray();
 		readLine2();
 		str = readLine2();
