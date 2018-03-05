@@ -32,10 +32,9 @@ import ui.FPStext;
 
 class MeshLoader 
 {
-	///////////////////////////////////////////
-	
+//---------------------------------------------------------------------------	
 	//Common
-	
+//---------------------------------------------------------------------------
 	public var PIdiv2:Float = Math.PI / 2;
 	public var nPIdiv2:Float = 0-(Math.PI / 2);
 
@@ -43,10 +42,7 @@ class MeshLoader
 	public var timeFPSdiv2:Float = (1 / 30);
 
 	public var time:Float = Scheduler.realTime();
-
-	
-	///////////////////////////////////////////
-	
+//---------------------------------------------------------------------------
 	private var pipelineBones:PipelineState;
 	private var projectionLocationBones:ConstantLocation;
 	private var viewLocationBones:ConstantLocation;
@@ -78,9 +74,7 @@ class MeshLoader
 
 	private var started:Bool = false;
 	private var init:Bool = false;
-
-	///////////////////////////////////////////////////////
-	
+//---------------------------------------------------------------------------	
 	public var trans:BtTransform = BtTransform.create();
 	public var m:haxebullet.BtMotionState;
 	
@@ -97,10 +91,9 @@ class MeshLoader
 
 	public var angle:Float = 0.0;
 
-	///////////////////////////////////////////////////////
-		// Keys:
-	///////////////////////////////////////////////////////
-
+//---------------------------------------------------------------------------
+// Keys:
+//---------------------------------------------------------------------------
 	public var R:Bool = false;
 	public var F1:Bool = false;
 
@@ -113,9 +106,7 @@ class MeshLoader
 	public var rotateCameraRight:Bool = false;
 	public var rotateJustCameraLeft:Bool = false;
 	public var rotateJustCameraRight:Bool = false;
-
-	///////////////////////////////////////////////////////
-
+//---------------------------------------------------------------------------
 	var mesh:Object3d;
 	var skeleton:SkeletonD;
 	var modelMatrix:FastMatrix4;
@@ -142,20 +133,18 @@ class MeshLoader
 	var depthMap:Image;
 	var finalTarget:Image;
 	var blur:Image;
-
-///////////////////////////////////////////////////////
-
-//Scale
+//---------------------------------------------------------------------------
+// Scale
+//---------------------------------------------------------------------------
 	static inline var scale = 0.225;
 	static inline var scaleCollisions = 0.0225;
 	
 	public var scaleMatrix:kha.math.FastMatrix4 = FastMatrix4.scale(scale,scale,scale);
-
-///////////////////////////////////////////////////////
-//Gamepad
-	var virtualGamepad:VirtualGamepad;	
-	
-///////////////////////////////////////////////////////
+//---------------------------------------------------------------------------
+// Gamepad
+//---------------------------------------------------------------------------
+	public var virtualGamepad:VirtualGamepad;	
+//---------------------------------------------------------------------------
 	public var cameraMatrix:kha.math.FastMatrix4;
 	public var projection:kha.math.FastMatrix4;
 	public var projection00:kha.math.FastMatrix4 = FastMatrix4.orthogonalProjection(-30,25,-30,25,-1500,1000);
@@ -172,25 +161,24 @@ class MeshLoader
 	public var lookVec3b = new FastVector3(0, 0, 0);
 	public var lookVec3c = new FastVector3(0, 0, 0);
 	public var lookVec3d = new FastVector3(0, 0, 0);
-
-///////////////////////////////////////////////////////
-	//Physics
-	var dynamicsWorld:BtDiscreteDynamicsWorld;
-	
+//---------------------------------------------------------------------------
+// Physics
+//---------------------------------------------------------------------------
+	public var dynamicsWorld:BtDiscreteDynamicsWorld;
+//---------------------------------------------------------------------------	
 	//Jump/Fall
 	public var fallRigidBody:BtRigidBody;
 	
 	public var jumpHeight = 30;
 	public var fallVec:haxebullet.BtVector3 = BtVector3.create(0,0,0);
-	public var jumpVec:haxebullet.BtVector3 = BtVector3.create(0,30,0);
-		
-///////////////////////////////////////////////////////
-	//Shadow
+	public var jumpVec:haxebullet.BtVector3 = BtVector3.create(0,30,0);	
+//---------------------------------------------------------------------------
+// Shadow
+//---------------------------------------------------------------------------
 	public var biasMatrixTrans_00 = FastMatrix4.translation(0.5,0.5,0.5).multmat(FastMatrix4.scale(0.5,0.5,0.5));
-			
-///////////////////////////////////////////////////////
-	//UI
-
+//---------------------------------------------------------------------------
+// UI
+//---------------------------------------------------------------------------	
 	public var g2:kha.graphics2.Graphics;
 	public var loaded:Int = 0;		
 	public var fontSize:Int = 64;
@@ -199,64 +187,69 @@ class MeshLoader
 	public inline function new() { Assets.loadFont("mainfont",onFontloaded); }
 
 	public var fps:FPStext = new FPStext();
-	
-//////////////////////////////////////////////////////
-
+//---------------------------------------------------------------------------
 	public inline function start(): Void 
 	{ 
-
-///////////////////////////////////////////////////////
-	//FPS
-		fps.gFont = loadFont;
-		fps.gfontSize = fontSize;
+//---------------------------------------------------------------------------
+// FPS
+//---------------------------------------------------------------------------
+		fps.font = loadFont;
+		fps.fontSize = fontSize;
 		fps.init();
 		fps.x = Main.width - fps.xMargin;
-		//fps.x = 600; //50% size
-
-///////////////////////////////////////////////////////
-	//Collision
-		startExtracting = true;
-		var collisionConfiguration = BtDefaultCollisionConfiguration.create();
-		var dispatcher = BtCollisionDispatcher.create(collisionConfiguration);
-		var broadphase = BtDbvtBroadphase.create();
-		var solver = BtSequentialImpulseConstraintSolver.create();
-		dynamicsWorld = BtDiscreteDynamicsWorld.create(dispatcher, broadphase, solver, collisionConfiguration);
-		dynamicsWorld.setGravity(BtVector3.create(0,-50,0));
-	//Input
+//---------------------------------------------------------------------------
+// Input
+//---------------------------------------------------------------------------	
 		Keyboard.get().notify(onKeyDown, onKeyUp, onKeyPress);
 		kha.input.Gamepad.get(0).notify(onAxis, onButton);
 		virtualGamepad = new VirtualGamepad(Main.width, Main.height);
 		virtualGamepad.addStick(0, 1,  150, Main.height - 150, 150);
 		virtualGamepad.addButton(0, Main.width - 150, Main.height - 150, 150);
 		virtualGamepad.notify(onAxis, onButton);
+//---------------------------------------------------------------------------
+// Collision
+//---------------------------------------------------------------------------	
+		startExtracting = true;
 
-	//Rig n Bones		
+		var collisionConfiguration = BtDefaultCollisionConfiguration.create();
+		var dispatcher = BtCollisionDispatcher.create(collisionConfiguration);
+		var broadphase = BtDbvtBroadphase.create();
+		var solver = BtSequentialImpulseConstraintSolver.create();
+		dynamicsWorld = BtDiscreteDynamicsWorld.create(dispatcher, broadphase, solver, collisionConfiguration);
+		dynamicsWorld.setGravity(BtVector3.create(0,-50,0));
+
+//---------------------------------------------------------------------------
+// Rig n Bones	
+//---------------------------------------------------------------------------	
 		Scheduler.addTimeTask(update, 0, timeFPS);
+
 		var data = new OgexData(Assets.blobs.mario_ogex.toString());
 	
 		var sk = SkeletonLoader.getSkeleton(data);
 		obj3d = MeshExtractor.extract(data, sk);
 		skeleton = sk[0];
 		data = new OgexData(Assets.blobs.untitled_ogex.toString());
-		
+//---------------------------------------------------------------------------
+// Stage		
+//---------------------------------------------------------------------------
 		level = MeshExtractor.extract(data,null);
-
-//Water
+//---------------------------------------------------------------------------
+	//Water setup
+//---------------------------------------------------------------------------
+	
 		var dataWater = new OgexData(Assets.blobs.water_ogex.toString());
 		water = MeshExtractor.extract(dataWater,null);
 
-		
-		trace("loaded");
+		trace("meshes loaded");
 	
-	//	kha.System.changeResolution(100,100);
-		
 		shadowMap = Image.createRenderTarget(256,256,TextureFormat.DEPTH16);
 		depthMap = Image.createRenderTarget(Main.width,Main.height,TextureFormat.DEPTH16);
 		//depthMap.setDepthStencilFrom
 		finalTarget = Image.createRenderTarget(Main.width,Main.height,TextureFormat.RGBA32,DepthStencilFormat.DepthOnly,2);
 		//finalTarget.setDepthStencilFrom(depthMap);
 		blur = Image.createRenderTarget(Std.int(Main.width/4),Std.int(Main.height/4),TextureFormat.RGBA32,DepthStencilFormat.DepthOnly,2);
-		
+
+			
 		var collisionMesh:BtTriangleMesh = BtTriangleMesh.create(true,false);
 		
 		var totalTriangles;
@@ -302,8 +295,6 @@ class MeshLoader
 		var centerOfMassOffsetTransform = BtTransform.create();
 		centerOfMassOffsetTransform.setIdentity();
 		var groundMotionState = BtDefaultMotionState.create(groundTransform, centerOfMassOffsetTransform);
-		
-
 		var groundRigidBodyCI = BtRigidBodyConstructionInfo.create(0, groundMotionState, groundShape, BtVector3.create(0, 0, 0));
 		
 		var groundRigidBody = BtRigidBody.create(groundRigidBodyCI);
@@ -426,7 +417,8 @@ class MeshLoader
 		modelMatrix = (FastMatrix4.rotationX(nPIdiv2)).multmat(scaleMatrix);
 
 ///////////////////////////////////////////////////////////////////////
-	//Auto-assign starting position for restart:
+//	Assign start position for restart:
+///////////////////////////////////////////////////////////////////////
 		startModelMatrix = modelMatrix;
 		pos = trans.getOrigin();
 		startModelMatrix._30 = cast pos.x() * 10;
@@ -527,7 +519,6 @@ class MeshLoader
 			modelMatrix._30 = startModelMatrix._30;
 			modelMatrix._31 = startModelMatrix._31;
 			modelMatrix._32 = startModelMatrix._32;
-			marioAngle = 0;
 		/*
 			modelMatrix._30 = 0;
 			modelMatrix._31 = 72.5;
