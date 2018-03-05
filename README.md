@@ -3,8 +3,8 @@
 
 ### Controls:
 
-WASD - or ARROWS to move
-Q & E - to rotate camera
+WASD * or ARROWS to move
+Q & E + to rotate camera
 F1 - toggle FPS
 
 
