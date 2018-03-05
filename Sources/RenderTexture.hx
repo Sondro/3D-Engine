@@ -41,15 +41,9 @@ class RenderTexture
 
 	public static var g:kha.graphics4.Graphics;	
 	
-	//static var vertexBuffer:VertexBuffer;
-	//static var indexBuffer:IndexBuffer;
-
-	static var vertexBuffer:VertexBuffer = new VertexBuffer(4, structure, Usage.StaticUsage);
-	static var indexBuffer:IndexBuffer = new IndexBuffer(6, Usage.StaticUsage);
-
-	public static var vertices:kha.arrays.Float32Array;
-	public static var indices:kha.arrays.Uint32Array;
-
+	static var vertexBuffer:VertexBuffer;
+	static var indexBuffer:IndexBuffer;
+	
 	public static inline function updateProjections():Void 
 	{
 		projection_ortho00 = FastMatrix4.orthogonalProjection(0, Main.width, Main.height, 0, -2, 1000);
@@ -59,12 +53,13 @@ class RenderTexture
 	public static inline function renderTo(aTarget:Canvas,aImage:Image, aX:Float, aY:Float, aScale:Float,aChanel:Chanel,aClear:Bool)
 	{
 		if (!initialized)
-		{
+		{			
+			initialized = true;
+
 			structure = new VertexStructure();
 			structure.add("pos", VertexData.Float3);
 			structure.add("uv", VertexData.Float2);
 			
-			//colorPipline = new PipelineState();
 			colorPipline.inputLayout = [structure];
 			colorPipline.vertexShader = Shaders.texture_vert;
 			colorPipline.fragmentShader = Shaders.textureColor_frag;
@@ -73,7 +68,6 @@ class RenderTexture
 			textureColorPos = colorPipline.getTextureUnit("tex");
 			transformColorPos=colorPipline.getConstantLocation("mvp");
 			
-			//depthPipline = new PipelineState();
 			depthPipline.inputLayout = [structure];
 			depthPipline.vertexShader = Shaders.texture_vert;
 			depthPipline.fragmentShader = Shaders.textureDepth_frag;
@@ -81,16 +75,9 @@ class RenderTexture
 			depthPipline.compile();
 			textureDepthPos = depthPipline.getTextureUnit("tex");
 			transformDepthPos=depthPipline.getConstantLocation("mvp");
-			//vertexBuffer = new VertexBuffer(4, structure, Usage.StaticUsage);
-			//indexBuffer = new IndexBuffer(6, Usage.StaticUsage);
-			
-			vertexes = vertexBuffer.lock();
-    	for (i in 0...vertexes.length) { vertexes.set(i, vertexes[i]); }
-    	vertexBuffer.unlock();
-
-			indexes = indexBuffer.lock();
-    	for (i in 0...indexes.length) { indexes[i] = indexes[i]; }
-    	
+			vertexBuffer = new VertexBuffer(4, structure, Usage.StaticUsage);
+			indexBuffer = new IndexBuffer(6, Usage.StaticUsage);
+		
 			indexBuffer.unlock();	
 
 			indexes = indexBuffer.lock();
@@ -102,7 +89,7 @@ class RenderTexture
 			indexes.set(5, 2);
 			indexBuffer.unlock();
 			
-			if (aTarget.g4.renderTargetsInvertedY()) 
+			if(aTarget.g4.renderTargetsInvertedY()) 
 			{
 				projection = projection_ortho00;
 			} else {
@@ -138,8 +125,7 @@ class RenderTexture
 		vertexBuffer.unlock();
 		
 		g = aTarget.g4;
-		
-		
+
 		g.begin();
 		if(aClear) g.clear();
 		g.setVertexBuffer(vertexBuffer);
