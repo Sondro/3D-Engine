@@ -1,2 +1,2 @@
 # 3D Engine in Haxe 
-##(based on khaSunshine)
+## Based on khaSunshine
