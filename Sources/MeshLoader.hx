@@ -101,8 +101,8 @@ class MeshLoader
 		// Keys:
 	///////////////////////////////////////////////////////
 
-	public var rUp:Bool = false;
-	public var f1Up:Bool = false;
+	public var R:Bool = false;
+	public var F1:Bool = false;
 
 	public var left:Bool = false;
 	public var right:Bool = false;
@@ -127,7 +127,7 @@ class MeshLoader
 	var water:Array<Object3d>;
 
 	public var marioAngle:Float = 0.0;
-	public var isDirUpdated:Bool = false;
+	public var isDiRdated:Bool = false;
 	public var curDir:String = '';
 	public var oldDir:String = '';
 
@@ -515,7 +515,7 @@ class MeshLoader
 		modelMatrix._32 = cast pos.z() * 10;
 
 		//Reset position
-		if(rUp) 
+		if(R) 
 		{
 			//trace(modelMatrix._30);
 			//trace(modelMatrix._31);
@@ -526,57 +526,54 @@ class MeshLoader
 			
 		}
 
-		if(f1Up) 
+		if(F1) 
 		{
 			fps.toggleFPS();
-			f1Up = false;
+			F1 = false;
 		}
 
 		if(rotateCameraLeft||rotateJustCameraLeft) 
 		{ 
 			cameraAngle -= 0.02; 
-			isDirUpdated = false;
+			isDiRdated = false;
  		}
 		else if(rotateCameraRight||rotateJustCameraRight) 
 		{ 
 			cameraAngle += 0.02; 	
-			isDirUpdated = false;
+			isDiRdated = false;
 		}
 
 		if(left || right|| forward || backward)
 		{	
 
-		if(left) 
-		{
-
-			dir.y += 1;
-			curDir = 'left';
-		
-			isDirUpdated = false;
-		}
-		if(right) 
-		{
-			dir.y -= 1;
-			curDir = 'right';
-			isDirUpdated = false;
-		}
-		if(forward) 
-		{
-			dir.x -= 1;
-			curDir = 'forward';
-		}
-		if(backward) 
-		{
-			dir.x += 1;
-			curDir = 'back';
-
-			controllerAngle = cameraAngle; 
-		}
-		else { controllerAngle = marioAngle; }
+			if(left) 
+			{
+				dir.y += 1;
+				curDir = 'left';
+				isDiRdated = false;
+			}
+			if(right) 
+			{
+				dir.y -= 1;
+				curDir = 'right';
+				isDiRdated = false;
+			}
+			if(forward) 
+			{
+				dir.x -= 1;
+				curDir = 'forward';
+			}
+			if(backward) 
+			{
+				dir.x += 1;
+				curDir = 'back';
+				controllerAngle = cameraAngle; 
+			}
+			else { controllerAngle = marioAngle; }
 
 		oldDir = curDir;
 
-		if(isDirUpdated != true)
+		if(isDiRdated != true)
 		{
 			dir = dir.mult(10);
 		 
@@ -628,7 +625,7 @@ class MeshLoader
 			}
 		}
 
-		if(jump &&vel.y() <= 0)
+		if(jump && vel.y() <= 0)
 		{
 			jumpVec.setX(vel.x());
 			//jumpVec.setY(30);
@@ -646,14 +643,7 @@ class MeshLoader
 		fallVec.setZ(dir.y);
 
 		fallRigidBody.setLinearVelocity(fallVec);
-			
-			// if(!left&&!right&&!forward&&!backward)
-			// {
-			// 	cameraAngle += (marioMatrixAngle-cameraAngle)/100;
-			// }
-		//cameraAngle += (marioAngle-cameraAngle)/2;
-		
-		isDirUpdated = true;
+		isDiRdated = true;
 	}
 
 
@@ -667,12 +657,12 @@ class MeshLoader
 		//Reset Mario Pos
 		if (aCode == KeyCode.R)
 		{
-			rUp = false;
+			R = false;
 		}
 
 		if (aCode == KeyCode.F1)
 		{
-			f1Up = false;
+			F1 = false;
 		}
 
 		if (aCode == KeyCode.Left || aCode == KeyCode.A)
@@ -712,15 +702,15 @@ class MeshLoader
 	{
 		if (aCode == KeyCode.R)
 		{
-			rUp = true;
+			R = true;
 		}
 		if (aCode == KeyCode.F1)
 		{
-			f1Up = true;
+			F1 = true;
 		}
 
 		if (aCode == KeyCode.Left && left == false
- || aCode == KeyCode.A && left == false)
+ 				|| aCode == KeyCode.A && left == false)
 		{
 			left = true;
 			rotateCameraRight = true;
@@ -801,7 +791,6 @@ class MeshLoader
 				}
 
 			//Render Shadow
-
 				g.setPipeline(pipelineDepth);
 				g.setMatrix(projectionLocationDepth, projection);
 				g.setMatrix(viewLocationDepth, cameraMatrix);
@@ -841,7 +830,6 @@ class MeshLoader
 
 			projection = projection01_window;
 			//FastMatrix4.orthogonalProjection(-25,25,-25,25,-1500,1000);
-			
 			
 			for(mesh in level)
 			{
@@ -913,7 +901,6 @@ class MeshLoader
 
 			//RenderTexture.renderTo(finalTarget,shadowMap,0,0,0.2,RenderTexture.Chanel.Color,true);
 
-			fps.totalFrames++;
 			fps.draw(g2);
 			g2.end();
 
