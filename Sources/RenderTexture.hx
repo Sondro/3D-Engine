@@ -39,17 +39,16 @@ class RenderTexture
 	public static var vertexes:kha.arrays.Float32Array;
 	public static var indexes:kha.arrays.Uint32Array;
 
-	public static var verticies:Array<Float> = [];
-	public static var indicies:Array<Int> = [];
-
 	public static var g:kha.graphics4.Graphics;	
 	
-	static var vertexBuffer:VertexBuffer;
-	static var indexBuffer:IndexBuffer;
+	//static var vertexBuffer:VertexBuffer;
+	//static var indexBuffer:IndexBuffer;
 
-	//static var vertexBuffer:VertexBuffer = new VertexBuffer(4, structure, Usage.StaticUsage);
-	//static var indexBuffer:IndexBuffer = new IndexBuffer(6, Usage.StaticUsage);
+	static var vertexBuffer:VertexBuffer = new VertexBuffer(4, structure, Usage.StaticUsage);
+	static var indexBuffer:IndexBuffer = new IndexBuffer(6, Usage.StaticUsage);
 
+	public static var vertices:kha.arrays.Float32Array;
+	public static var indices:kha.arrays.Uint32Array;
 
 	public static inline function updateProjections():Void 
 	{
@@ -82,12 +81,17 @@ class RenderTexture
 			depthPipline.compile();
 			textureDepthPos = depthPipline.getTextureUnit("tex");
 			transformDepthPos=depthPipline.getConstantLocation("mvp");
-			vertexBuffer = new VertexBuffer(4, structure, Usage.StaticUsage);
-			indexBuffer = new IndexBuffer(6, Usage.StaticUsage);
+			//vertexBuffer = new VertexBuffer(4, structure, Usage.StaticUsage);
+			//indexBuffer = new IndexBuffer(6, Usage.StaticUsage);
 			
-			// Copy indices to index buffer
-    	//for (i in 0...indexes.length) { indexes[i] = indices[i]; }
-    	//indexBuffer.unlock();
+			vertexes = vertexBuffer.lock();
+    	for (i in 0...vertexes.length) { vertexes.set(i, vertexes[i]); }
+    	vertexBuffer.unlock();
+
+			indexes = indexBuffer.lock();
+    	for (i in 0...indexes.length) { indexes[i] = indexes[i]; }
+    	
+			indexBuffer.unlock();	
 
 			indexes = indexBuffer.lock();
 			indexes.set(0, 0);
