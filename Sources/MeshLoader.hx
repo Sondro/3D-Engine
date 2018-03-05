@@ -499,7 +499,7 @@ class MeshLoader
 	}
 	private inline function onButton(aId:Int,aValue:Float):Void
 	{
-		jump = (aId == 0 &&aValue>0);
+		//jump = (aId == 0 &&aValue>0);
 	}
 
 	inline public function update() 
@@ -656,7 +656,8 @@ class MeshLoader
 			}
 		}
 
-		if(jump && vel.y() <= 0)
+	//if(jump && vel.y() <= 0)
+		if(jump)
 		{
 			jumpVec.setX(vel.x());
 			//jumpVec.setY(jumpHeight);
@@ -714,7 +715,7 @@ class MeshLoader
 		{
 			backward = false;
 		}
-		if(aCode == KeyCode.Space || aCode == KeyCode.P || aCode == KeyCode.Numpad9)
+		if(aCode == KeyCode.Space || aCode == KeyCode.O || aCode == KeyCode.Numpad9)
 		{
 			jump = false;
 		}
@@ -740,26 +741,25 @@ class MeshLoader
 			F1 = true;
 		}
 
-		if (aCode == KeyCode.Left && left == false
- 				|| aCode == KeyCode.A && left == false)
+		if (aCode == KeyCode.Left && !left || aCode == KeyCode.A && !left)
 		{
 			left = true;
 			rotateCameraRight = true;
 		}
-		if (aCode == KeyCode.Right && right == false || aCode == KeyCode.D && right == false)
+		if (aCode == KeyCode.Right && !right || aCode == KeyCode.D && !right)
 		{
 			right = true;
 			rotateCameraLeft = true;
 		}
-		if (aCode == KeyCode.Up && forward == false || aCode == KeyCode.W && forward == false)//|| kha.Mouse.
+		if (aCode == KeyCode.Up && !forward || aCode == KeyCode.W && !forward)//|| kha.Mouse.
 		{
 			forward = true;
 		}
-		if (aCode == KeyCode.Down && backward == false || aCode == KeyCode.S && backward == false)
+		if (aCode == KeyCode.Down && !backward || aCode == KeyCode.S && !backward)
 		{
 			backward = true;
 		}
-		if(aCode == KeyCode.Space || aCode == KeyCode.O || aCode == KeyCode.Numpad9)
+		if(aCode == KeyCode.Space && !jump || aCode == KeyCode.O && !jump || aCode == KeyCode.Numpad9 && !jump)
 		{
 			jump = true;
 		}
