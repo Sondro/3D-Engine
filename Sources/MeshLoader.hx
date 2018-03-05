@@ -117,10 +117,9 @@ class MeshLoader
 	///////////////////////////////////////////////////////
 
 	var mesh:Object3d;
-
 	var skeleton:SkeletonD;
-	
 	var modelMatrix:FastMatrix4;
+	var startModelMatrix:FastMatrix4;
 
 	var obj3d:Array<Object3d>;
 	var level:Array<Object3d>;
@@ -425,8 +424,16 @@ class MeshLoader
 		modelViewWater = pipelineWater.getConstantLocation("mv");
 		
 		modelMatrix = (FastMatrix4.rotationX(nPIdiv2)).multmat(scaleMatrix);
+
 ///////////////////////////////////////////////////////////////////////
-		
+	//Auto-assign starting position for restart:
+		startModelMatrix = modelMatrix;
+		pos = trans.getOrigin();
+		startModelMatrix._30 = cast pos.x() * 10;
+		startModelMatrix._31 = cast pos.y() * 10;
+		startModelMatrix._32 = cast pos.z() * 10;
+///////////////////////////////////////////////////////////////////////
+
 		started = true;
 	}
 
@@ -499,11 +506,11 @@ class MeshLoader
 	{
 		fps.update();
 
-		
 		dynamicsWorld.stepSimulation(timeFPS);
 		m = fallRigidBody.getMotionState();
 		m.getWorldTransform(trans);
-		pos = trans.getOrigin();
+
+		//pos = trans.getOrigin();
 
 		vel = fallRigidBody.getLinearVelocity();
 		
@@ -513,17 +520,41 @@ class MeshLoader
 		modelMatrix._30 = cast pos.x() * 10;
 		modelMatrix._31 = cast pos.y() * 10;
 		modelMatrix._32 = cast pos.z() * 10;
-
+		
 		//Reset position
 		if(R) 
 		{
-			//trace(modelMatrix._30);
-			//trace(modelMatrix._31);
-			//trace(modelMatrix._32);
+			modelMatrix._30 = startModelMatrix._30;
+			modelMatrix._31 = startModelMatrix._31;
+			modelMatrix._32 = startModelMatrix._32;
+			marioAngle = 0;
+		/*
 			modelMatrix._30 = 0;
 			modelMatrix._31 = 72.5;
 			modelMatrix._32 = 1200;
+		*/
+		/*
+			modelMatrix._00 = startModelMatrix._00;
+			modelMatrix._01 = startModelMatrix._01;
+			modelMatrix._02 = startModelMatrix._02;
+			modelMatrix._03 = startModelMatrix._03;
+
+			modelMatrix._10 = startModelMatrix._10;
+			modelMatrix._11 = startModelMatrix._11;
+			modelMatrix._12 = startModelMatrix._12;
+			modelMatrix._13 = startModelMatrix._13;
+	
+			modelMatrix._20 = startModelMatrix._20;
+			modelMatrix._21 = startModelMatrix._21;
+			modelMatrix._22 = startModelMatrix._22;
+			modelMatrix._23 = startModelMatrix._23;
 			
+			modelMatrix._30 = startModelMatrix._30;
+			modelMatrix._31 = startModelMatrix._31;
+			modelMatrix._32 = startModelMatrix._32;
+			modelMatrix._33 = startModelMatrix._33;
+	*/
+
 		}
 
 		if(F1) 
@@ -923,7 +954,7 @@ class MeshLoader
 			loadCounter = (loadCounter++)%4;
 			loaded = Std.int(Assets.progress * 100);
 
-			if(startExtracting) { g2.drawString(extractStr, (Main.width/2) - (extractStr.length + 1) * (g2.fontSize/6),(Main.height/2.5)-(g2.fontSize/2)); }
+			if(startExtracting) { g2.drawString(extractStr, (Main.width/2) - (extractStr.length) * (g2.fontSize/6),(Main.height/2.5)-(g2.fontSize/2)); }
 			else { g2.drawString(loadStr + loaded +"%", (Main.width/2) - (loadStr.length + 6) * (g2.fontSize/6),(Main.height/2.5)-(g2.fontSize/2)); }
 			//else { g2.drawString(loadStr + loaded +"%", (Main.width/2) - (loadStr.length + 3) * (g2.fontSize/6),(Main.height/2)-(g2.fontSize/2)); }
 
