@@ -5,7 +5,7 @@
 
 - WASD		  :: to move
 	- ARROWS
-- Q & E           :: to rotate camera
+- Q & E           :: rotate camera
 - F1              :: toggle FPS
 - O			  :: Jump
 	- SPACEBAR
