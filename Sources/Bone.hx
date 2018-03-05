@@ -25,7 +25,7 @@ class Bone
 	{
 		if(!animated)
 		{
-			finalTransform=bindTransform;
+			finalTransform = bindTransform;
 			
 		}
 		else
