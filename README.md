@@ -10,6 +10,7 @@
 - O			  :: Jump
 	- SPACEBAR
 	- NUMPAD9  
+- R			  :: Reset to starting position (not fully working)
 
 ### To-Do:
 ```
