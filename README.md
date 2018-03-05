@@ -10,11 +10,10 @@
 - O			  :: Jump
 	- SPACEBAR
 	- NUMPAD9  
-- R			  :: Reset to starting position (not fully working)
-
+- Click		  :: enter fullscreen mode (will probably change)
+- Esc			  :: exit fullscreen mode (will probably change)
 ### To-Do:
-```
-[+] Break-out input into Inputter.hx (class) from MeshLoader.hx
-[-] Remove lag bottleneck
-[+] Break-out render/update from MeshLoader.hx
-```
+
+#### [+] Break-out input into Inputter.hx (class) from MeshLoader.hx
+#### [-] Remove lag bottleneck
+#### [+] Break-out render/update from MeshLoader.hx
