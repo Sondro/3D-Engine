@@ -73,7 +73,7 @@ class OgexData extends Container
 
 		try 
 		{
-			while (true) 
+			while(true) 
 			{
 				strArr = readLine();
 				switch(strArr[0]) 
@@ -108,54 +108,54 @@ class OgexData extends Container
 
 	public inline function getNode(name:String):Node { 
 		traverseNodes(function(it:Node) { 
-			if (it.name == name) { node = it; }
+			if(it.name == name) { node = it; }
 		});
 		return node; 
 	}
 	public inline function getNodeBy(ref:String):Node { 
 		traverseNodes(function(it:Node) { 
-			if (it.ref == ref) { node = it; }
+			if(it.ref == ref) { node = it; }
 		});
 		return node; 
 	}
 
 	public inline function traverseNodes(callback:Node->Void) {
-		for (i in 0...children.length) {
+		for(i in 0...children.length) {
 			traverseNodesStep(children[i], callback);
 		}
 	}
 	
 	inline function traverseNodesStep(node:Node, callback:Node->Void) {
 		callback(node);
-		for (i in 0...node.children.length) {
+		for(i in 0...node.children.length) {
 			traverseNodesStep(node.children[i], callback);
 		}
 	}
 
 	public inline function getGeometryObject(ref:String):GeometryObject {
-		for (go in geometryObjects) {
-			if (go.ref == ref) return go;
+		for(go in geometryObjects) {
+			if(go.ref == ref) return go;
 		}
 		return null;
 	}
 
 	public inline function getCameraObject(ref:String):CameraObject {
-		for (co in cameraObjects) {
-			if (co.ref == ref) return co;
+		for(co in cameraObjects) {
+			if(co.ref == ref) return co;
 		}
 		return null;
 	}
 
 	public inline function getLightObject(ref:String):LightObject {
-		for (lo in lightObjects) {
-			if (lo.ref == ref) return lo;
+		for(lo in lightObjects) {
+			if(lo.ref == ref) return lo;
 		}
 		return null;
 	}
 
 	public function getMaterial(ref:String):Material {
-		for (m in materials) {
-			if (m.ref == ref) { return m; }
+		for(m in materials) {
+			if(m.ref == ref) { return m; }
 		}
 		return null;
 	}
@@ -178,7 +178,7 @@ class OgexData extends Container
 		metric = new Metric();
 		metric.key = strArr[3].split('"')[1];
 		str = strArr[5].split("{")[1].split("}")[0];
-		if (strArr[4] == "{float") {
+		if(strArr[4] == "{float") {
 			metric.value = Std.parseFloat(str);
 		}
 		else {
@@ -187,165 +187,177 @@ class OgexData extends Container
 		return metric;
 	}
 
-	inline function parseNode(strArr:Array<String>, parent:Container):Node {
-		var n = new Node();
-		n.parent = parent;
-		n.ref = strArr[1];
+	inline function parseNode(strArr:Array<String>, parent:Container):Node 
+	{
+		var node = new Node();
+		node.parent = parent;
+		node.ref = strArr[1];
 
-		while (true) {
+		while(true) 
+		{
 			strArr = readLine();
-
-			switch(strArr[0]) {
+			switch(strArr[0]) 
+			{
 				case "Name":
-					n.name = parseName(strArr);
+					node.name = parseName(strArr);
 				case "Transform":
-					n.transform = parseTransform(strArr);
+					node.transform = parseTransform(strArr);
 				case "Node":
-					n.children.push(parseNode(strArr, n));
+					node.children.push(parseNode(strArr, node));
 				case "GeometryNode":
-					n.children.push(parseGeometryNode(strArr, n));
+					node.children.push(parseGeometryNode(strArr, node));
 				case "LightNode":
-					n.children.push(parseLightNode(strArr, n));
+					node.children.push(parseLightNode(strArr, node));
 				case "CameraNode":
-					n.children.push(parseCameraNode(strArr, n));
+					node.children.push(parseCameraNode(strArr, node));
 				case "BoneNode":
-					n.children.push(parseBoneNode(strArr, n));
+					node.children.push(parseBoneNode(strArr, node));
 				case "}":
 					break;
 			}
 		}
-		return n;
+		return node;
 	}
 
-	inline function parseGeometryNode(strArr:Array<String>, parent:Container):GeometryNode {
-		var n = new GeometryNode();
-		n.parent = parent;
-		n.ref = strArr[1];
+	inline function parseGeometryNode(strArr:Array<String>, parent:Container):GeometryNode 
+	{
+		var geoNode = new GeometryNode();
+		geoNode.parent = parent;
+		geoNode.ref = strArr[1];
 
-		while (true) {
+		while(true) 
+		{
 			strArr = readLine();
-
-			switch(strArr[0]) {
+			switch(strArr[0]) 
+			{
 				case "Name":
-					n.name = parseName(strArr);
+					geoNode.name = parseName(strArr);
 				case "ObjectRef":
-					n.objectRefs.push(parseObjectRef(strArr));
+					geoNode.objectRefs.push(parseObjectRef(strArr));
 				case "MaterialRef":
-					n.materialRefs.push(parseMaterialRef(strArr));
+					geoNode.materialRefs.push(parseMaterialRef(strArr));
 				case "Transform":
-					n.transform = parseTransform(strArr);
+					geoNode.transform = parseTransform(strArr);
 				case "Node":
-					n.children.push(parseNode(strArr, n));
+					geoNode.children.push(parseNode(strArr, geoNode));
 				case "GeometryNode":
-					n.children.push(parseGeometryNode(strArr, n));
+					geoNode.children.push(parseGeometryNode(strArr, geoNode));
 				case "LightNode":
-					n.children.push(parseLightNode(strArr, n));
+					geoNode.children.push(parseLightNode(strArr, geoNode));
 				case "CameraNode":
-					n.children.push(parseCameraNode(strArr, n));
+					geoNode.children.push(parseCameraNode(strArr, geoNode));
 				case "BoneNode":
-					n.children.push(parseBoneNode(strArr, n));
+					geoNode.children.push(parseBoneNode(strArr, geoNode));
 				case "}":
 					break;
 			}
 		}
-		return n;
+		return geoNode;
 	}
 
-	inline function parseLightNode(strArr:Array<String>, parent:Container):LightNode {
-		var n = new LightNode();
-		n.parent = parent;
-		n.ref = strArr[1];
+	inline function parseLightNode(strArr:Array<String>, parent:Container):LightNode 
+	{
+		var lightNode = new LightNode();
+		lightNode.parent = parent;
+		lightNode.ref = strArr[1];
 
-		while (true) {
+		while(true) 
+		{
 			strArr = readLine();
-
-			switch(strArr[0]) {
+			switch(strArr[0]) 
+			{
 				case "Name":
-					n.name = parseName(strArr);
+					lightNode.name = parseName(strArr);
 				case "ObjectRef":
-					n.objectRefs.push(parseObjectRef(strArr));
+					lightNode.objectRefs.push(parseObjectRef(strArr));
 				case "Transform":
-					n.transform = parseTransform(strArr);
+					lightNode.transform = parseTransform(strArr);
 				case "Node":
-					n.children.push(parseNode(strArr, n));
+					lightNode.children.push(parseNode(strArr, lightNode));
 				case "GeometryNode":
-					n.children.push(parseGeometryNode(strArr, n));
+					lightNode.children.push(parseGeometryNode(strArr, lightNode));
 				case "LightNode":
-					n.children.push(parseLightNode(strArr, n));
+					lightNode.children.push(parseLightNode(strArr, lightNode));
 				case "CameraNode":
-					n.children.push(parseCameraNode(strArr, n));
+					lightNode.children.push(parseCameraNode(strArr, lightNode));
 				case "BoneNode":
-					n.children.push(parseBoneNode(strArr, n));
+					lightNode.children.push(parseBoneNode(strArr, lightNode));
 				case "}":
 					break;
 			}
 		}
-		return n;
+		return lightNode;
 	}
 
-	inline function parseCameraNode(strArr:Array<String>, parent:Container):CameraNode {
-		var n = new CameraNode();
-		n.parent = parent;
-		n.ref = strArr[1];
+	inline function parseCameraNode(strArr:Array<String>, parent:Container):CameraNode 
+	{
+		var camNode = new CameraNode();
+		camNode.parent = parent;
+		camNode.ref = strArr[1];
 
-		while (true) {
+		while(true) 
+		{
 			strArr = readLine();
-
-			switch(strArr[0]) {
+			switch(strArr[0]) 
+			{
 				case "Name":
-					n.name = parseName(strArr);
+					camNode.name = parseName(strArr);
 				case "ObjectRef":
-					n.objectRefs.push(parseObjectRef(strArr));
+					camNode.objectRefs.push(parseObjectRef(strArr));
 				case "Transform":
-					n.transform = parseTransform(strArr);
+					camNode.transform = parseTransform(strArr);
 				case "Node":
-					n.children.push(parseNode(strArr, n));
+					camNode.children.push(parseNode(strArr, camNode));
 				case "GeometryNode":
-					n.children.push(parseGeometryNode(strArr, n));
+					camNode.children.push(parseGeometryNode(strArr, camNode));
 				case "LightNode":
-					n.children.push(parseLightNode(strArr, n));
+					camNode.children.push(parseLightNode(strArr, camNode));
 				case "CameraNode":
-					n.children.push(parseCameraNode(strArr, n));
+					camNode.children.push(parseCameraNode(strArr, camNode));
 				case "BoneNode":
-					n.children.push(parseBoneNode(strArr, n));
+					camNode.children.push(parseBoneNode(strArr, camNode));
 				case "}":
 					break;
 			}
 		}
-		return n;
+		return camNode;
 	}
 
-	inline function parseBoneNode(strArr:Array<String>, parent:Container):BoneNode {
-		var n = new BoneNode();
-		n.parent = parent;
-		n.ref = strArr[1];
+	inline function parseBoneNode(strArr:Array<String>, parent:Container):BoneNode 
+	{
+		var boneNode = new BoneNode();
+		boneNode.parent = parent;
+		boneNode.ref = strArr[1];
 
-		while (true) {
+		while(true) 
+		{
 			strArr = readLine();
-
-			switch(strArr[0]) {
+			switch(strArr[0]) 
+			{
 				case "Name":
-					n.name = parseName(strArr);
+					boneNode.name = parseName(strArr);
 				case "Transform":
-					n.transform = parseTransform(strArr);
+					boneNode.transform = parseTransform(strArr);
 				case "BoneNode":
-					n.children.push(parseBoneNode(strArr, n));
+					boneNode.children.push(parseBoneNode(strArr, boneNode));
 				case "Animation":
-					n.animation = parseAnimation(strArr);
+					boneNode.animation = parseAnimation(strArr);
 				case "}":
 					break;
 			}
 		}
-		return n;
+		return boneNode;
 	}
 
-	function parseGeometryObject(strArr:Array<String>):GeometryObject {
+	function parseGeometryObject(strArr:Array<String>):GeometryObject 
+	{
 		geoObject = new GeometryObject();
 		geoObject.ref = strArr[1].split("\t")[0];
-		while (true) {
+		while(true) 
+		{
 			strArr = readLine();
-
-			switch(strArr[0]) {
+			switch(strArr[0]) 
+			{
 				case "Mesh":
 					geoObject.mesh = parseMesh(strArr);
 				case "}":
@@ -359,10 +371,9 @@ class OgexData extends Container
 	{
 		mesh = new Mesh();
 		mesh.primitive = strArr[3].split('"')[1];
-		while (true) 
+		while(true) 
 		{
 			strArr = readLine();
-
 			switch(strArr[0]) 
 			{
 				case "VertexArray":
@@ -381,10 +392,9 @@ class OgexData extends Container
 	inline function parseSkin(strArr:Array<String>):Skin 
 	{
 		skin = new Skin();
-		while (true) 
+		while(true) 
 		{
 			strArr = readLine();
-
 			switch(strArr[0]) 
 			{
 				case "Transform":
@@ -407,10 +417,9 @@ class OgexData extends Container
 	inline function parseSkeleton(strArr:Array<String>):Skeleton 
 	{
 		skel = new Skeleton();
-		while (true) 
+		while(true) 
 		{
 			strArr = readLine();
-
 			switch(strArr[0]) 
 			{
 				case "BoneRefArray":
@@ -424,7 +433,8 @@ class OgexData extends Container
 		return skel;
 	}
 
-	inline function parseBoneRefArray(strArr:Array<String>):BoneRefArray {
+	inline function parseBoneRefArray(strArr:Array<String>):BoneRefArray 
+	{
 		boneRefArray = new BoneRefArray();
 		readLine2(); readLine2(); readLine2();
 		str = readLine2();
@@ -438,7 +448,7 @@ class OgexData extends Container
 	{
 		transArray = new Array<Transform>();
 		readLine2(); readLine2(); readLine2();
-		while (true) 
+		while(true) 
 		{
 			trans = new Transform();
 			str = readLine2();
@@ -446,9 +456,9 @@ class OgexData extends Container
 			str = StringTools.replace(str, "}", "");
 			strArr = str.split(",");
 			offset = strArr[strArr.length - 1] == "" ? 1 : 0;
-			for (i in 0...strArr.length - offset) trans.values.push(Std.parseFloat(strArr[i]));
+			for(i in 0...strArr.length - offset) { trans.values.push(Std.parseFloat(strArr[i])); }
 			transArray.push(trans);
-			if (offset == 0) { break; }
+			if(offset == 0) { break; }
 		}
 		readLine2(); readLine2();
 		return transArray;
@@ -458,14 +468,14 @@ class OgexData extends Container
 	{
 		boneCountArray = new BoneCountArray();
 		readLine2(); readLine2(); readLine2();
-		while (true) 
+		while(true) 
 		{
 			str = readLine2();
 			str = StringTools.replace(str, " ", "");
 			strArr = str.split(",");
 			offset = strArr[strArr.length - 1] == "" ? 1 : 0;
-			for (i in 0...strArr.length - offset) { boneCountArray.values.push(Std.parseInt(strArr[i])); }
-			if (offset == 0) { break; }
+			for(i in 0...strArr.length - offset) { boneCountArray.values.push(Std.parseInt(strArr[i])); }
+			if(offset == 0) { break; }
 		}
 		readLine2(); readLine2();
 		return boneCountArray;
@@ -475,14 +485,14 @@ class OgexData extends Container
 	{
 		boneIndexArray = new BoneIndexArray();
 		readLine2(); readLine2(); readLine2();
-		while (true) 
+		while(true) 
 		{
 			str = readLine2();
 			str = StringTools.replace(str, " ", "");
 			strArr = str.split(",");
 			offset = strArr[strArr.length - 1] == "" ? 1 : 0;
-			for (i in 0...strArr.length - offset) { boneIndexArray.values.push(Std.parseInt(strArr[i])); }
-			if (offset == 0) { break; }
+			for(i in 0...strArr.length - offset) { boneIndexArray.values.push(Std.parseInt(strArr[i])); }
+			if(offset == 0) { break; }
 		}
 		readLine2(); readLine2();
 		return boneIndexArray;
@@ -492,14 +502,14 @@ class OgexData extends Container
 	{
 		boneWeightArray = new BoneWeightArray();
 		readLine2(); readLine2(); readLine2();
-		while (true) 
+		while(true) 
 		{
 			str = readLine2();
 			str = StringTools.replace(str, " ", "");
 			strArr = str.split(",");
 			offset = strArr[strArr.length - 1] == "" ? 1 : 0;
-			for (i in 0...strArr.length - offset) { boneWeightArray.values.push(Std.parseFloat(strArr[i])); }
-			if (offset == 0) { break; }
+			for(i in 0...strArr.length - offset) { boneWeightArray.values.push(Std.parseFloat(strArr[i])); }
+			if(offset == 0) { break; }
 		}
 		readLine2(); readLine2();
 		return boneWeightArray;
@@ -514,7 +524,7 @@ class OgexData extends Container
 		vertexArray.size = Std.parseInt(str.split("[")[1].split("]")[0]);
 		readLine2();
 		
-		while (true) 
+		while(true) 
 		{
 			// TODO: unify float[] {} parsing
 			str = readLine2();
@@ -522,8 +532,8 @@ class OgexData extends Container
 			str = StringTools.replace(str, "}", "");
 			strArr = str.split(",");
 			offset = strArr[strArr.length - 1] == "" ? 1 : 0;
-			for (i in 0...strArr.length - offset) { vertexArray.values.push(Std.parseFloat(strArr[i])); }
-			if (offset == 0) { break; }
+			for(i in 0...strArr.length - offset) { vertexArray.values.push(Std.parseFloat(strArr[i])); }
+			if(offset == 0) { break; }
 		}
 		readLine2(); readLine2();
 		return vertexArray;
@@ -536,15 +546,15 @@ class OgexData extends Container
 		str = readLine2();
 		indexArray.size = Std.parseInt(str.split("[")[1].split("]")[0]);
 		readLine2();
-		while (true) 
+		while(true) 
 		{
 			str = readLine2();
 			str = StringTools.replace(str, "{", "");
 			str = StringTools.replace(str, "}", "");
 			strArr = str.split(",");
 			offset = strArr[strArr.length - 1] == "" ? 1 : 0;
-			for (i in 0...strArr.length - offset) { indexArray.values.push(Std.parseInt(strArr[i])); }
-			if (offset == 0) break;
+			for(i in 0...strArr.length - offset) { indexArray.values.push(Std.parseInt(strArr[i])); }
+			if(offset == 0) break;
 		}
 		readLine2(); readLine2();
 		return indexArray;
@@ -555,7 +565,7 @@ class OgexData extends Container
 		lightObject = new LightObject();
 		lightObject.ref = strArr[1];
 		lightObject.type = strArr[4].split('"')[1];
-		while (true) 
+		while(true) 
 		{
 			strArr = readLine();
 
@@ -576,7 +586,7 @@ class OgexData extends Container
 	{
 		color = new Color();
 		color.attrib = strArr[3].split('"')[1];
-		for (i in 5...strArr.length) 
+		for(i in 5...strArr.length) 
 		{
 			str = strArr[i];
 			str = StringTools.replace(str, "{", "");
@@ -608,7 +618,6 @@ class OgexData extends Container
 		while(true) 
 		{
 			strArr = readLine();
-
 			switch(strArr[0]) 
 			{
 				case "Param":
@@ -635,7 +644,7 @@ class OgexData extends Container
 	{
 		cameraObject = new CameraObject();
 		cameraObject.ref = strArr[1].split("\t")[0];
-		while (true) 
+		while(true) 
 		{
 			strArr = readLine();
 			switch(strArr[0]) 
@@ -653,10 +662,11 @@ class OgexData extends Container
 	{
 		material = new Material();
 		material.ref = strArr[1];
-		while (true) {
+		while(true) 
+		{
 			strArr = readLine();
-
-			switch(strArr[0]) {
+			switch(strArr[0]) 
+			{
 				case "Name":
 					material.name = parseName(strArr);
 				case "Color":
@@ -672,22 +682,17 @@ class OgexData extends Container
 		return material;
 	}
 
-	inline function parseName(strArr:Array<String>):String {
-		return strArr[2].split('"')[1];
-	}
+	inline function parseName(strArr:Array<String>):String { return strArr[2].split('"')[1];	}
 
-	inline function parseObjectRef(strArr:Array<String>):String {
-		return strArr[2].split("}")[0].substr(1);
-	}
+	inline function parseObjectRef(strArr:Array<String>):String { return strArr[2].split("}")[0].substr(1); }
 
-	inline function parseMaterialRef(strArr:Array<String>):String {
-		return strArr[5].split("}")[0].substr(1);
-	}
+	inline function parseMaterialRef(strArr:Array<String>):String { return strArr[5].split("}")[0].substr(1); }
 
-	inline function parseTransform(strArr:Array<String>):Transform {
+	inline function parseTransform(strArr:Array<String>):Transform 
+	{
 		// TODO: Correct value parsing
 		trans = new Transform();
-		if (strArr.length > 1) { trans.ref = strArr[1]; }
+		if(strArr.length > 1) { trans.ref = strArr[1]; }
 		readLine2(); readLine2(); readLine2();
 		str = readLine2().substr(1);
 		str += readLine2();
@@ -695,7 +700,7 @@ class OgexData extends Container
 		var str2 = readLine2();
 		str += str2.substr(0, str2.length - 2);
 		strArr = str.split(",");
-		for (i in 0...strArr.length) 
+		for(i in 0...strArr.length) 
 		{
 			var j = Std.int(i / 4);
 			var k = i % 4;
@@ -708,10 +713,11 @@ class OgexData extends Container
 	inline function parseAnimation(strArr:Array<String>):Animation 
 	{
 		anim = new Animation();
-		while (true) 
+		while(true) 
 		{
 			strArr = readLine();
-			switch(strArr[0]) {
+			switch(strArr[0]) 
+			{
 				case "Track":
 					anim.track = parseTrack(strArr);
 				case "}":
@@ -725,7 +731,7 @@ class OgexData extends Container
 	{
 		track = new Track();
 		track.target = strArr[3].substr(0, strArr[3].length - 2);
-		while (true) 
+		while(true) 
 		{
 			strArr = readLine();
 			switch(strArr[0]) 
@@ -744,7 +750,7 @@ class OgexData extends Container
 	inline function parseTime(strArr:Array<String>):OgexTime 
 	{
 		ogexTime = new OgexTime();
-		while (true) 
+		while(true) 
 		{
 			strArr = readLine();
 
@@ -762,7 +768,7 @@ class OgexData extends Container
 	inline function parseValue(strArr:Array<String>):Value 
 	{
 		value = new Value();
-		while (true) 
+		while(true) 
 		{
 			strArr = readLine();
 			switch(strArr[0]) 
@@ -779,10 +785,10 @@ class OgexData extends Container
 	inline function parseKey(strArr:Array<String>):Key 
 	{
 		key = new Key();
-		if (strArr.length > 2) 
+		if(strArr.length > 2) 
 		{ // One str
 			key.values.push(Std.parseFloat(strArr[2].substr(1)));
-			for (i in 3...strArr.length - 2) 
+			for(i in 3...strArr.length - 2) 
 			{
 				key.values.push(Std.parseFloat(strArr[i]));
 			}
@@ -791,15 +797,15 @@ class OgexData extends Container
 		else 
 		{ // Multi str
 			readLine2(); readLine2(); readLine2();
-			while (true) 
+			while(true) 
 			{
 				str = readLine2();
 				str = StringTools.replace(str, "{", "");
 				str = StringTools.replace(str, "}", "");
 				strArr = str.split(",");
 				offset = strArr[strArr.length - 1] == "" ? 1 : 0;
-				for (i in 0...strArr.length - offset) { key.values.push(Std.parseFloat(strArr[i])); }
-				if (offset == 0) { break; }
+				for(i in 0...strArr.length - offset) { key.values.push(Std.parseFloat(strArr[i])); }
+				if(offset == 0) { break; }
 			}
 			readLine2();readLine2();
 		}
@@ -807,7 +813,8 @@ class OgexData extends Container
 	}
 }
 
-class Metric {
+class Metric 
+{
 
 	public var key:String;
 	public var value:Dynamic;
@@ -815,7 +822,8 @@ class Metric {
 	public inline function new() {}
 }
 
-class Node extends Container {
+class Node extends Container 
+{
 
 	public var parent:Container;
 	public var ref:String;
@@ -825,31 +833,35 @@ class Node extends Container {
 	public inline function new() { super(); }
 }
 
-class GeometryNode extends Node {
+class GeometryNode extends Node 
+{
 
 	public var materialRefs:Array<String> = [];
 
 	public inline function new() { super(); }
 }
 
-class LightNode extends Node {
+class LightNode extends Node 
+{
+  public inline function new() { super(); }
+}
+
+class CameraNode extends Node 
+{
 
 	public inline function new() { super(); }
 }
 
-class CameraNode extends Node {
-
-	public inline function new() { super(); }
-}
-
-class BoneNode extends Node {
+class BoneNode extends Node 
+{
 
 	public var animation:Animation;
 
 	public inline function new() { super(); }
 }
 
-class GeometryObject {
+class GeometryObject 
+{
 
 	public var ref:String;
 	public var mesh:Mesh;
@@ -857,7 +869,8 @@ class GeometryObject {
 	public inline function new() {}
 }
 
-class LightObject {
+class LightObject 
+{
 
 	public var ref:String;
 	public var type:String;
@@ -867,7 +880,8 @@ class LightObject {
 	public inline function new() {}
 }
 
-class CameraObject {
+class CameraObject 
+{
 
 	public var ref:String;
 	public var params:Array<Param> = [];
@@ -875,12 +889,13 @@ class CameraObject {
 	public inline function new() {}
 }
 
-class Material {
+class Material 
+{
 
 	public var ref:String;
 	public var name:String;
 	public var colors:Array<Color> = [];
-	public var texture:Array<Texture>=[];
+	public var texture:Array<Texture> = [];
 	public var params:Array<Param> = [];
 
 	public inline function new() {}
@@ -893,7 +908,8 @@ class Texture
 	public inline function new() {}
 }
 
-class Transform {
+class Transform 
+{
 
 	public var ref:String = "";
 	public var values:Array<Float> = [];
@@ -901,7 +917,8 @@ class Transform {
 	public inline function new() {}
 }
 
-class Mesh {
+class Mesh 
+{
 
 	public var primitive:String;
 	public var vertexArrays:Array<VertexArray> = [];
@@ -910,16 +927,18 @@ class Mesh {
 
 	public inline function new() {}
 
-	public inline function getArray(attrib:String):VertexArray {
-		for (va in vertexArrays) 
+	public inline function getArray(attrib:String):VertexArray 
+	{
+		for(va in vertexArrays) 
 		{
-			if (va.attrib == attrib) { return va; }
+			if(va.attrib == attrib) { return va; }
 		}
 		return null;
 	}
 }
 
-class Skin {
+class Skin 
+{
 
 	public var transform:Transform;
 	public var skeleton:Skeleton;
