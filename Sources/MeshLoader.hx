@@ -164,12 +164,29 @@ class MeshLoader
 //---------------------------------------------------------------------------
 // Physics
 //---------------------------------------------------------------------------
-	public var dynamicsWorld:BtDiscreteDynamicsWorld;
 //---------------------------------------------------------------------------	
 	//Jump/Fall
 //---------------------------------------------------------------------------		
-	public var fallRigidBody:BtRigidBody;
-	
+	#if js
+		public var fallRigidBody:BtRigidBody;
+		public var dynamicsWorld:BtDiscreteDynamicsWorld;
+	#else
+	public var fallRigidBody:BtRigidBody = BtRigidBody.create(BtRigidBodyConstructionInfo.create
+	(
+		0, 
+		BtDefaultMotionState.create(BtTransform.create(), BtTransform.create()), 
+		BtBvhTriangleMeshShape.create(BtStridingMeshInterface, false, false), 
+		BtVector3.create(0, 0, 0)
+	));
+
+	public var dynamicsWorld:BtDiscreteDynamicsWorld = BtDiscreteDynamicsWorld.create
+	(
+		BtCollisionDispatcher.create(BtDefaultCollisionConfiguration.create()), 
+		BtDbvtBroadphase.create(),  
+		BtSequentialImpulseConstraintSolver.create(), 
+		BtDefaultCollisionConfiguration.create()
+	);
+	#end
 	public var jumpHeight = 30;
 	public var fallVec:haxebullet.BtVector3 = BtVector3.create(0,0,0);
 	public var jumpVec:haxebullet.BtVector3 = BtVector3.create(0,30,0);	
@@ -222,7 +239,6 @@ class MeshLoader
 		var solver = BtSequentialImpulseConstraintSolver.create();
 		dynamicsWorld = BtDiscreteDynamicsWorld.create(dispatcher, broadphase, solver, collisionConfiguration);
 		dynamicsWorld.setGravity(BtVector3.create(0,-50,0));
-
 //---------------------------------------------------------------------------
 // Rig n Bones	
 //---------------------------------------------------------------------------	
@@ -292,7 +308,6 @@ class MeshLoader
 ///////////////////////////////////////////////////////////////////////
 //	Physics:
 ///////////////////////////////////////////////////////////////////////
-		
 		var groundShape = BtBvhTriangleMeshShape.create(collisionMesh,true,true);
 		var groundTransform = BtTransform.create();
 		groundTransform.setIdentity();
