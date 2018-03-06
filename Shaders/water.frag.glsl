@@ -32,8 +32,6 @@ void kore()
   reflectVec = normalize(-reflect(lightDir, normal));
  	diffuse = diff00 * vec3(dot(normal, lightDir)) * v3_1p0;
 
-
-	
 	//specularReflection = vec3(1.0) * pow(max(0.0, dot( reflectVec,eyeVecNormal)),500);
 	//specularReflection = vec3(1.0) * pow(max(dot(reflectVec, eyeVecNormal), 0.0), 1000);
   //specularReflection = vec3(0.5) * vec3(1.) * vec3(1.)* pow(max(0.0, dot(reflect(-lightDir, normal), eyeVecNormal)),5);

@@ -14,7 +14,6 @@ out vec3 norm;
 out vec2 texCoord;
 out vec3 eyeVec;
 
-vec4 v4_pos_1p0 = vec4(pos, 1.0);
 vec4 v4_0p0_0p0_0p0_1p0 = vec4(0.0,0.0,0.0,1.0);
 
 void kore() {
