@@ -19,10 +19,7 @@ class SkeletonD
 	}
 	public inline function setFrame(aFrame:Int)
 	{
-		for (child in bones) 
-		{
-			child.setFrame(aFrame, transformation);
-		}
+		for (child in bones) { child.setFrame(aFrame, transformation);}
 	}
 	public function getBone(aId:String):Bone
 	{	
