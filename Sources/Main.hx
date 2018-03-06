@@ -2,10 +2,12 @@ package;
 
 import kha.System;
 import kha.input.Mouse;
-import kha.SystemImpl;
 
 class Main 
-{
+{	
+	public static var defWidth = 1280;
+	public static var defHeight = 720;
+
 	public static var width = 1280;
 	public static var height = 720;
 	public static var winTitle = '3D Demo';
@@ -23,14 +25,14 @@ class Main
 	//var ignore:Bool = false;
 	public static inline function onMouseDown(a:Int,b:Int,c:Int) 
 	{
-		SystemImpl.notifyOfFullscreenChange(sizeChange,error);
-		SystemImpl.requestFullscreen();
+		System.notifyOnFullscreenChange(sizeChange,error);
+		System.requestFullscreen();
 	}
 
 	static inline function sizeChange():Void
 	{
 		#if js
-		 if(SystemImpl.isFullscreen()) 
+		 if(System.isFullscreen()) 
 		 {
 		  	trace("fullscreen mode");
 			 

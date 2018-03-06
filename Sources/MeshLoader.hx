@@ -731,14 +731,13 @@ class MeshLoader
 		}
 		if(aCode == KeyCode.Q)
 		{
-			rotateJustCameraLeft = false;
+			rotateJustCameraRight = false;
 		}
 		if(aCode == KeyCode.E)
 		{
-			rotateJustCameraRight = false;
+			rotateJustCameraLeft = false;
 		}
 	}
-
 	
 	inline function onKeyDown(aCode:KeyCode) 
 	{
@@ -775,11 +774,11 @@ class MeshLoader
 		}
 		if(aCode == KeyCode.Q)
 		{
-			rotateJustCameraLeft = true;
+			rotateJustCameraRight = true;
 		}
 		if(aCode == KeyCode.E)
 		{
-			rotateJustCameraRight = true;
+			rotateJustCameraLeft = true;
 		}
 
 	}
