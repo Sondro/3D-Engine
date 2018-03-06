@@ -3,15 +3,18 @@
 
 ### Controls:
 
-- WASD		  :: to move
-	- ARROWS
-- Q & E           :: rotate camera
-- F1              :: toggle FPS
-- O			  :: Jump
-	- SPACEBAR
-	- NUMPAD9  
-- Click		  :: enter fullscreen mode (will probably change)
-- Esc			  :: exit fullscreen mode (will probably change)
+|   KEY(S)   |          EVENTS         |
+| :--------: | :---------------------: |
+|    WASD	   |          to move        |
+|   ARROWS   |`                       `|
+|    Q & E   |       rotate camera     |
+|     F1     |        toggle FPS       |
+|     O		   |          Jump			     |
+|  SPACEBAR  |`												`|
+|	 NUMPAD9   |`                       `|
+| Left Click |  enter fullscreen mode  |
+|    Esc		 |  exit fullscreen mode   |
+
 ### To-Do:
 ```
 [+] Break-out input into Inputter.hx (class) from MeshLoader.hx
