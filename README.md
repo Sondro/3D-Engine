@@ -16,7 +16,7 @@
 |    Esc		 |  exit fullscreen mode   |
 
 ### To-Do:
-```
-[+] Break-out input into Inputter.hx (class) from MeshLoader.hx
-[+] Break-out render/update from MeshLoader.hx
-```
+|     |                                                                |
+| --- | -------------------------------------------------------------- |
+|`[+]`| Break-out input into Inputter.hx (class) from MeshLoader.hx    |
+|`[+]`| Break-out render/update from MeshLoader.hx                     |
