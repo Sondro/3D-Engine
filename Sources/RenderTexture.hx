@@ -1,9 +1,9 @@
 package;
-import kha.Assets;
+//import kha.Assets;
 import kha.Canvas;
 import kha.Image;
 import kha.Shaders;
-import kha.graphics4.CompareMode;
+//import kha.graphics4.CompareMode;
 import kha.graphics4.IndexBuffer;
 import kha.graphics4.PipelineState;
 import kha.graphics4.TextureUnit;
@@ -17,10 +17,12 @@ import kha.math.FastMatrix4;
  * ...
  * @author Joaquin
  */
-enum Chanel {
+enum Channel 
+{
 	Color;
 	Depth;
 }
+
 class RenderTexture
 {
 	static var initialized:Bool = false;
@@ -32,8 +34,8 @@ class RenderTexture
 	static var transformDepthPos:kha.graphics4.ConstantLocation;
 
 	static var projection:FastMatrix4;
-	static var projection_ortho00:FastMatrix4 = FastMatrix4.orthogonalProjection(0, Main.width, Main.height, 0, -2, 1000);
-	static var projection_ortho01:FastMatrix4 = FastMatrix4.orthogonalProjection(0, Main.width, 0, Main.height, -2, 1000);
+	static var projectionOrtho00:FastMatrix4 = FastMatrix4.orthogonalProjection(0, Main.width, Main.height, 0, -2, 1000);
+	static var projectionOrtho01:FastMatrix4 = FastMatrix4.orthogonalProjection(0, Main.width, 0, Main.height, -2, 1000);
 
 	public static var structure:VertexStructure;
 	public static var vertexes:kha.arrays.Float32Array;
@@ -46,13 +48,13 @@ class RenderTexture
 	
 	public static inline function updateProjections():Void 
 	{
-		projection_ortho00 = FastMatrix4.orthogonalProjection(0, Main.width, Main.height, 0, -2, 1000);
-		projection_ortho01 = FastMatrix4.orthogonalProjection(0, Main.width, 0, Main.height, -2, 1000);
+		projectionOrtho00 = FastMatrix4.orthogonalProjection(0, Main.width, Main.height, 0, -2, 1000);
+		projectionOrtho01 = FastMatrix4.orthogonalProjection(0, Main.width, 0, Main.height, -2, 1000);
 	}
 	
-	public static inline function renderTo(aTarget:Canvas,aImage:Image, aX:Float, aY:Float, aScale:Float,aChanel:Chanel,aClear:Bool)
+	public static inline function renderTo(aTarget:Canvas,aImage:Image, aX:Float, aY:Float, aScale:Float,aChannel:Channel,aClear:Bool)
 	{
-		if (!initialized)
+		if(!initialized)
 		{			
 			initialized = true;
 
@@ -89,12 +91,8 @@ class RenderTexture
 			indexes.set(5, 2);
 			indexBuffer.unlock();
 			
-			if(aTarget.g4.renderTargetsInvertedY()) 
-			{
-				projection = projection_ortho00;
-			} else {
-				projection = projection_ortho01;
-			}
+			if(aTarget.g4.renderTargetsInvertedY()) { projection = projectionOrtho00; } 
+			else { projection = projectionOrtho01; }
 		}
 		
 		vertexes = vertexBuffer.lock();
@@ -127,14 +125,17 @@ class RenderTexture
 		g = aTarget.g4;
 
 		g.begin();
-		if(aClear) g.clear();
+		if(aClear) { g.clear(); }
 		g.setVertexBuffer(vertexBuffer);
 		g.setIndexBuffer(indexBuffer);
-		if(aChanel==Chanel.Color){
+		if(aChannel==Channel.Color)
+		{
 			g.setPipeline(colorPipline);
 			g.setTexture(textureColorPos, aImage);
 			g.setMatrix(transformColorPos,projection);
-		}else {
+		}
+		else 
+		{
 			g.setPipeline(depthPipline);
 			g.setTexture(textureDepthPos, aImage);
 			g.setMatrix(transformDepthPos,projection);
