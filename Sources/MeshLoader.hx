@@ -939,18 +939,18 @@ class MeshLoader
 				g.end();	
 			}
 
-			//RenderTexture.renderTo(finalTarget,shadowMap,0,0,0.2,RenderTexture.Chanel.Color,true);
+			//RenderTexture.renderTo(finalTarget,shadowMap,0,0,0.2,RenderTexture.Channel.Color,true);
 
 			fps.totalFrames++;
 			fps.draw(g2);
 			g2.end();
 
-			RenderTexture.renderTo(frame,finalTarget,0,0,1,RenderTexture.Chanel.Color,true);
+			RenderTexture.renderTo(frame,finalTarget,0,0,1,RenderTexture.Channel.Color,true);
 
 		}
 		else if(fontLoaded)
 		{
-			//g2.transformation = kha.math.FastMatrix3.scale(2,2); //50%
+			//g2.transformation = kha.math.FastMatrix3.scale(2,2); //scale 50%
 			if(loaded == 0) 
 			{
 				g2 = frame.g2;
