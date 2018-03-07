@@ -164,8 +164,9 @@ class MeshLoader
 //---------------------------------------------------------------------------
 // Physics
 //---------------------------------------------------------------------------
+
 //---------------------------------------------------------------------------	
-	//Jump/Fall
+// Jump/Fall
 //---------------------------------------------------------------------------		
 	#if js
 		public var fallRigidBody:BtRigidBody;
@@ -175,7 +176,7 @@ class MeshLoader
 	(
 		0, 
 		BtDefaultMotionState.create(BtTransform.create(), BtTransform.create()), 
-		BtBvhTriangleMeshShape.create(BtStridingMeshInterface, false, false), 
+		BtBvhTriangleMeshShape.create(BtTriangleMesh.create(true, true), false, false), 
 		BtVector3.create(0, 0, 0)
 	));
 
