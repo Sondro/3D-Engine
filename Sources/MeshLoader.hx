@@ -183,7 +183,7 @@ class MeshLoader
 	public var cameraMatrix:kha.math.FastMatrix4;
 	public var projection:kha.math.FastMatrix4;
 	public var projection00:kha.math.FastMatrix4 = FastMatrix4.orthogonalProjection(-30,25,-30,25,-1500,1000);
-	public var projection01_window:kha.math.FastMatrix4 = FastMatrix4.perspectiveProjection(45 , Main.width / Main.height, 0.1, 5000);
+	public var projection01_sceen:kha.math.FastMatrix4 = FastMatrix4.perspectiveProjection(45 , Main.width / Main.height, 0.1, 5000);
 
 	public var g:kha.graphics4.Graphics;
 	public var g4_2:kha.graphics4.Graphics2;
@@ -205,14 +205,12 @@ class MeshLoader
 // UI
 //---------------------------------------------------------------------------	
 	public var g2:kha.graphics2.Graphics;
+
+	public var fontColor:kha.Color = kha.Color.White;
 	public var loaded:Int = 0;		
 	public var fontSize:Int = 64;
 	public var loadStr:String = 'Loading... ';
 	public var extractStr:String = 'Extracting Meshes... ';
-
-
-	public var fontColor:kha.Color = kha.Color.White;
-
 
 	public var fps:FPStext = new FPStext();
 
@@ -258,7 +256,7 @@ class MeshLoader
 		skeleton = sk[0];
 		data = new OgexData(Assets.blobs.untitled_ogex.toString());
 //---------------------------------------------------------------------------
-// Stage		
+// Stage
 //---------------------------------------------------------------------------
 		level = MeshExtractor.extract(data,null);
 //---------------------------------------------------------------------------
@@ -704,31 +702,36 @@ class MeshLoader
 	inline function onKeyUp(aCode:KeyCode) 
 	{
 		//Reset Mario Pos
-		if (aCode == KeyCode.R)
+		if(aCode == KeyCode.R)
 		{
 			R = false;
 		}
 
-		if (aCode == KeyCode.F1)
+		if(aCode == KeyCode.F1)
 		{
 			F1 = false;
 		}
 
-		if (aCode == KeyCode.Left || aCode == KeyCode.A)
+		if(aCode == KeyCode.Left || aCode == KeyCode.A)
 		{
+			//left = false;
+			//rotateCameraRight = false;
+			right = false;
+			rotateCameraLeft = false;
+
+		}
+		if(aCode == KeyCode.Right || aCode == KeyCode.D)
+		{
+			//right = false;
+			//rotateCameraLeft = false;
 			left = false;
 			rotateCameraRight = false;
 		}
-		if (aCode == KeyCode.Right || aCode == KeyCode.D)
-		{
-			right = false;
-			rotateCameraLeft = false;
-		}
-		if (aCode == KeyCode.Up || aCode == KeyCode.W)
+		if(aCode == KeyCode.Up || aCode == KeyCode.W)
 		{
 			forward = false;
 		}
-		if (aCode == KeyCode.Down || aCode == KeyCode.S)
+		if(aCode == KeyCode.Down || aCode == KeyCode.S)
 		{
 			backward = false;
 		}
@@ -748,30 +751,34 @@ class MeshLoader
 	
 	inline function onKeyDown(aCode:KeyCode) 
 	{
-		if (aCode == KeyCode.R)
+		if(aCode == KeyCode.R)
 		{
 			R = true;
 		}
-		if (aCode == KeyCode.F1)
+		if(aCode == KeyCode.F1)
 		{
 			F1 = true;
 		}
 
-		if (aCode == KeyCode.Left && !left || aCode == KeyCode.A && !left)
+		if(aCode == KeyCode.Left && !left || aCode == KeyCode.A && !left)
 		{
-			left = true;
-			rotateCameraRight = true;
-		}
-		if (aCode == KeyCode.Right && !right || aCode == KeyCode.D && !right)
-		{
+			//left = true;
+			//rotateCameraRight = true;
 			right = true;
 			rotateCameraLeft = true;
 		}
-		if (aCode == KeyCode.Up && !forward || aCode == KeyCode.W && !forward)//|| kha.Mouse.
+		if(aCode == KeyCode.Right && !right || aCode == KeyCode.D && !right)
+		{
+			//right = true;
+			//rotateCameraLeft = true;
+			left = true;
+			rotateCameraRight = true;
+		}
+		if(aCode == KeyCode.Up && !forward || aCode == KeyCode.W && !forward)//|| kha.Mouse.
 		{
 			forward = true;
 		}
-		if (aCode == KeyCode.Down && !backward || aCode == KeyCode.S && !backward)
+		if(aCode == KeyCode.Down && !backward || aCode == KeyCode.S && !backward)
 		{
 			backward = true;
 		}
@@ -781,11 +788,14 @@ class MeshLoader
 		}
 		if(aCode == KeyCode.Q)
 		{
-			rotateJustCameraRight = true;
+			//rotateJustCameraRight = true;
+			rotateJustCameraLeft = true;
+
 		}
 		if(aCode == KeyCode.E)
 		{
-			rotateJustCameraLeft = true;
+			rotateJustCameraRight = true;
+			//rotateJustCameraLeft = true;
 		}
 
 	}
@@ -875,7 +885,7 @@ class MeshLoader
 				lookVec3z
 			);
 
-			projection = projection01_window;
+			projection = projection01_sceen;
 			//FastMatrix4.orthogonalProjection(-25,25,-25,25,-1500,1000);
 			
 			for(mesh in level)
@@ -957,7 +967,6 @@ class MeshLoader
 		}
 		else if(fontLoaded)
 		{
-			//g2.transformation = kha.math.FastMatrix3.scale(2,2); //scale 50%
 			if(loaded == 0) 
 			{
 				g2 = frame.g2;
@@ -965,9 +974,9 @@ class MeshLoader
 				g2.fontSize = fontSize;
 				g2.color = fontColor;
 			}
+			//if(animI > loadAnim[0].length) { animI = 0; } else { animI++; }
 
 			loaded = Std.int(Assets.progress * 100);
-			
 			g2.begin(true);	
 			
 			if(startExtracting) 
@@ -977,9 +986,10 @@ class MeshLoader
 				g2.drawString(extractStr, (Main.width/2) - (extractStr.length) * (g2.fontSize/6),(Main.height/2)-(g2.fontSize/2));
 				g2.fontSize = fontSize;
 			}
-			else { g2.drawString(loadStr + loaded +"%", (Main.width/2) - (loadStr.length + 6) * (g2.fontSize/6),(Main.height/2.5)-(g2.fontSize/2)); }
-			//else { g2.drawString(loadStr + loaded +"%", (Main.width/2) - (loadStr.length + 3) * (g2.fontSize/6),(Main.height/2)-(g2.fontSize/2)); }
-			
+			else { 
+				g2.drawString(loadStr + loaded +"%", (Main.width/2) - (loadStr.length + 6) * (g2.fontSize/6),(Main.height/2.5)-(g2.fontSize/2));
+				//g2.drawString(loadAnim[animI], (Main.width/2) - (loadAnim[0].length) * (g2.fontSize),(Main.height/2)-(g2.fontSize/2)); 
+			}
 			g2.end();
 		}		
 	}
@@ -987,9 +997,8 @@ class MeshLoader
 //	Load & Start onLoad
 //---------------------------------------------------------------------------
 
-	//public inline function new() { Assets.loadingFont("mainfont",onFontload); }
-
-	var miniCharAnimation = ['/','-','\"','|'];
+//var loadAnim = ['/','-','\"','|']; var animI = 0;
+	
 	var fontLoaded:Bool;
 	var loadingFont:kha.Font;
 	var loadingFontStr:String = 'mainfont';
@@ -1003,15 +1012,10 @@ class MeshLoader
 		Assets.loadEverything(start);
 	}
 
-	public inline function onLoad(blob:kha.Blob)
-	{
-			//Assets.loadEverything(start);
-	}
+	//public inline function onLoad(blob:kha.Blob) { Assets.loadEverything(start); }
 
 	public inline function new() { 
-		
 		Assets.loadFont(loadingFontStr,onFontLoad); 
 	 //Assets.loadBlob("./dolpSS00.png",onLoad);
-	
 	}
 }
