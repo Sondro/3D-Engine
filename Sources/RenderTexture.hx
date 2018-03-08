@@ -66,7 +66,6 @@ class RenderTexture
 			colorPipline.vertexShader = Shaders.texture_vert;
 			colorPipline.fragmentShader = Shaders.textureColor_frag;
 
-			//colorPipline.compile();
 			colorPipline.compile();
 
 			textureColorPos = colorPipline.getTextureUnit("tex");
