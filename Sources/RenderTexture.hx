@@ -27,7 +27,7 @@ class RenderTexture
 {
 	static var initialized:Bool = false;
 	static var colorPipline:PipelineState = new PipelineState();
-	static var depthPipline:PipelineState = new PipelineState();
+//	static var depthPipline:PipelineState = new PipelineState();
 	static var textureColorPos:TextureUnit;
 	static var textureDepthPos:TextureUnit;
 	static var transformColorPos:kha.graphics4.ConstantLocation;
@@ -66,17 +66,20 @@ class RenderTexture
 			colorPipline.vertexShader = Shaders.texture_vert;
 			colorPipline.fragmentShader = Shaders.textureColor_frag;
 
+			//colorPipline.compile();
 			colorPipline.compile();
+
 			textureColorPos = colorPipline.getTextureUnit("tex");
-			transformColorPos=colorPipline.getConstantLocation("mvp");
+			transformColorPos = colorPipline.getConstantLocation("mvp");
+			transformDepthPos = colorPipline.getConstantLocation("mvp");
 			
-			depthPipline.inputLayout = [structure];
-			depthPipline.vertexShader = Shaders.texture_vert;
-			depthPipline.fragmentShader = Shaders.textureDepth_frag;
+		//	depthPipline.inputLayout = [structure];
+		//	depthPipline.vertexShader = Shaders.texture_vert;
+		//	depthPipline.fragmentShader = Shaders.textureDepth_frag;
 		
-			depthPipline.compile();
-			textureDepthPos = depthPipline.getTextureUnit("tex");
-			transformDepthPos=depthPipline.getConstantLocation("mvp");
+			//depthPipline.compile();
+			//textureDepthPos = depthPipline.getTextureUnit("tex");
+			//transformDepthPos = depthPipline.getConstantLocation("mvp");
 			vertexBuffer = new VertexBuffer(4, structure, Usage.StaticUsage);
 			indexBuffer = new IndexBuffer(6, Usage.StaticUsage);
 		
@@ -128,15 +131,16 @@ class RenderTexture
 		if(aClear) { g.clear(); }
 		g.setVertexBuffer(vertexBuffer);
 		g.setIndexBuffer(indexBuffer);
+		g.setPipeline(colorPipline);
 		if(aChannel==Channel.Color)
 		{
-			g.setPipeline(colorPipline);
+			//g.setPipeline(colorPipline);
 			g.setTexture(textureColorPos, aImage);
 			g.setMatrix(transformColorPos,projection);
 		}
 		else 
 		{
-			g.setPipeline(depthPipline);
+		//	g.setPipeline(depthPipline);
 			g.setTexture(textureDepthPos, aImage);
 			g.setMatrix(transformDepthPos,projection);
 		}
