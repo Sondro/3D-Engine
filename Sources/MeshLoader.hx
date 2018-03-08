@@ -1,31 +1,35 @@
 package;
 
 import kha.math.FastVector2;
-import haxebullet.Bullet;
-import kha.graphics4.CullMode;
-import kha.Framebuffer;
+import kha.math.FastVector3;
+import kha.math.FastMatrix4;
+
+import kha.Assets;
+import kha.Scheduler;
 import kha.Color;
-import kha.graphics4.CompareMode;
-import kha.graphics4.ConstantLocation;
+import kha.Image;
+import kha.Framebuffer;
+import kha.Shaders;
+
 import kha.graphics4.TextureUnit;
 import kha.graphics4.PipelineState;
 import kha.graphics4.VertexData;
 import kha.graphics4.VertexStructure;
-import kha.Assets;
-import kha.Shaders;
-import kha.input.KeyCode;
-import kha.math.FastMatrix4;
-import kha.math.FastVector3;
-import kha.Scheduler;
-import kha.input.Keyboard;
-import kha.input.Gamepad;
 import kha.graphics4.TextureAddressing;
 import kha.graphics4.TextureFilter;
 import kha.graphics4.MipMapFilter;
-import kha.Image;
+import kha.graphics4.CullMode;
+import kha.graphics4.CompareMode;
+import kha.graphics4.ConstantLocation;
 import kha.graphics4.DepthStencilFormat;
 import kha.graphics4.TextureFormat;
 import kha.graphics4.BlendingFactor;
+
+import kha.input.Keyboard;
+import kha.input.KeyCode;
+import kha.input.Gamepad;
+
+import haxebullet.Bullet;
 
 import ui.FPStext;
 
@@ -74,9 +78,11 @@ class MeshLoader
 
 	private var started:Bool = false;
 	private var init:Bool = false;
+
 //---------------------------------------------------------------------------	
-	public var trans:BtTransform = BtTransform.create();
-	public var m:haxebullet.BtMotionState;
+// Physics
+//---------------------------------------------------------------------------		
+	public var trans = BtTransform.create();
 	
 	public var vel:haxebullet.BtVector3;
 	public var dir:FastVector2 = new FastVector2(0, 0);
@@ -90,6 +96,35 @@ class MeshLoader
 	public var py:Float = 0.0;
 
 	public var angle:Float = 0.0;
+
+// Jump/Fall
+	#if js
+		public var m:haxebullet.BtMotionState;
+		
+		public var fallRigidBody:BtRigidBody;
+		public var dynamicsWorld:BtDiscreteDynamicsWorld;
+	#else
+		public var m = BtDefaultMotionState.create(BtTransform.create(), BtTransform.create());
+
+		public var fallRigidBody = BtRigidBody.create(BtRigidBodyConstructionInfo.create
+		(
+			0, 
+			BtDefaultMotionState.create(BtTransform.create(), BtTransform.create()), 
+			BtBvhTriangleMeshShape.create(BtTriangleMesh.create(true, true), false, false), 
+			BtVector3.create(0, 0, 0)
+		));
+
+		public var dynamicsWorld = BtDiscreteDynamicsWorld.create
+		(
+			BtCollisionDispatcher.create(BtDefaultCollisionConfiguration.create()), 
+			BtDbvtBroadphase.create(),  
+			BtSequentialImpulseConstraintSolver.create(), 
+			BtDefaultCollisionConfiguration.create()
+		);
+	#end
+	public var jumpHeight = 30;
+	public var fallVec = BtVector3.create(0,0,0);
+	public var jumpVec = BtVector3.create(0,30,0);	
 
 //---------------------------------------------------------------------------
 // Keys:
@@ -161,36 +196,7 @@ class MeshLoader
 	public var lookVec3b = new FastVector3(0, 0, 0);
 	public var lookVec3c = new FastVector3(0, 0, 0);
 	public var lookVec3d = new FastVector3(0, 0, 0);
-//---------------------------------------------------------------------------
-// Physics
-//---------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------	
-// Jump/Fall
-//---------------------------------------------------------------------------		
-	#if js
-		public var fallRigidBody:BtRigidBody;
-		public var dynamicsWorld:BtDiscreteDynamicsWorld;
-	#else
-	public var fallRigidBody:BtRigidBody = BtRigidBody.create(BtRigidBodyConstructionInfo.create
-	(
-		0, 
-		BtDefaultMotionState.create(BtTransform.create(), BtTransform.create()), 
-		BtBvhTriangleMeshShape.create(BtTriangleMesh.create(true, true), false, false), 
-		BtVector3.create(0, 0, 0)
-	));
-
-	public var dynamicsWorld:BtDiscreteDynamicsWorld = BtDiscreteDynamicsWorld.create
-	(
-		BtCollisionDispatcher.create(BtDefaultCollisionConfiguration.create()), 
-		BtDbvtBroadphase.create(),  
-		BtSequentialImpulseConstraintSolver.create(), 
-		BtDefaultCollisionConfiguration.create()
-	);
-	#end
-	public var jumpHeight = 30;
-	public var fallVec:haxebullet.BtVector3 = BtVector3.create(0,0,0);
-	public var jumpVec:haxebullet.BtVector3 = BtVector3.create(0,30,0);	
 //---------------------------------------------------------------------------
 // Shadow
 //---------------------------------------------------------------------------
@@ -207,16 +213,16 @@ class MeshLoader
 
 	public var fontColor:kha.Color = kha.Color.White;
 
-	public inline function new() { Assets.loadFont("mainfont",onFontloaded); }
 
 	public var fps:FPStext = new FPStext();
-//---------------------------------------------------------------------------
+
+
 	public inline function start(): Void 
 	{ 
 //---------------------------------------------------------------------------
 // FPS
 //---------------------------------------------------------------------------
-		fps.font = loadFont;
+		fps.font = loadingFont;
 		fps.fontSize = fontSize;
 		fps.init();
 		fps.x = Main.width - fps.xMargin;
@@ -272,7 +278,7 @@ class MeshLoader
 		blur = Image.createRenderTarget(Std.int(Main.width/4),Std.int(Main.height/4),TextureFormat.RGBA32,DepthStencilFormat.DepthOnly,2);
 
 			
-		var collisionMesh:BtTriangleMesh = BtTriangleMesh.create(true,false);
+		var collisionMesh = BtTriangleMesh.create(true,false);
 		
 		var totalTriangles;
 		var vertexes;
@@ -955,7 +961,7 @@ class MeshLoader
 			if(loaded == 0) 
 			{
 				g2 = frame.g2;
-				g2.font = loadFont;
+				g2.font = loadingFont;
 				g2.fontSize = fontSize;
 				g2.color = fontColor;
 			}
@@ -975,20 +981,37 @@ class MeshLoader
 			//else { g2.drawString(loadStr + loaded +"%", (Main.width/2) - (loadStr.length + 3) * (g2.fontSize/6),(Main.height/2)-(g2.fontSize/2)); }
 			
 			g2.end();
-		}	
-		
+		}		
 	}
+//---------------------------------------------------------------------------
+//	Load & Start onLoad
+//---------------------------------------------------------------------------
+
+	//public inline function new() { Assets.loadingFont("mainfont",onFontload); }
 
 	var miniCharAnimation = ['/','-','\"','|'];
-	//var loadCounter:Int = 0;
 	var fontLoaded:Bool;
-	var loadFont:kha.Font;
+	var loadingFont:kha.Font;
+	var loadingFontStr:String = 'mainfont';
+
 	var startExtracting:Bool;
 	
-	inline function onFontloaded(font:kha.Font)
+	public inline function onFontLoad(font:kha.Font)
 	{
-		loadFont = font;
+		loadingFont = font;
 		fontLoaded = true;
 		Assets.loadEverything(start);
+	}
+
+	public inline function onLoad(blob:kha.Blob)
+	{
+			//Assets.loadEverything(start);
+	}
+
+	public inline function new() { 
+		
+		Assets.loadFont(loadingFontStr,onFontLoad); 
+	 //Assets.loadBlob("./dolpSS00.png",onLoad);
+	
 	}
 }
