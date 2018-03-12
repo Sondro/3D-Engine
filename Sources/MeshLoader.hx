@@ -36,9 +36,10 @@ import ui.FPStext;
 
 class MeshLoader 
 {
-//---------------------------------------------------------------------------	
-	//Common
 //---------------------------------------------------------------------------
+// Common
+//---------------------------------------------------------------------------
+
 	public var PIdiv2:Float = Math.PI / 2;
 	public var nPIdiv2:Float = 0-(Math.PI / 2);
 
@@ -46,7 +47,11 @@ class MeshLoader
 	public var timeFPSdiv2:Float = (1 / 30);
 
 	public var time:Float = Scheduler.realTime();
+
 //---------------------------------------------------------------------------
+// Pipeline setup
+//---------------------------------------------------------------------------
+
 	private var pipelineBones:PipelineState;
 	private var projectionLocationBones:ConstantLocation;
 	private var viewLocationBones:ConstantLocation;
@@ -82,6 +87,7 @@ class MeshLoader
 //---------------------------------------------------------------------------	
 // Physics
 //---------------------------------------------------------------------------		
+
 	public var trans = BtTransform.create();
 	
 	public var vel:haxebullet.BtVector3;
@@ -130,6 +136,7 @@ class MeshLoader
 //---------------------------------------------------------------------------
 // Keys:
 //---------------------------------------------------------------------------
+
 	public var R:Bool = false;
 	public var F1:Bool = false;
 
@@ -143,6 +150,15 @@ class MeshLoader
 	public var rotateJustCameraLeft:Bool = false;
 	public var rotateJustCameraRight:Bool = false;
 //---------------------------------------------------------------------------
+// Gamepad
+//---------------------------------------------------------------------------
+	
+	public var virtualGamepad:VirtualGamepad;	
+
+//---------------------------------------------------------------------------
+// Meshes
+//---------------------------------------------------------------------------
+
 	var mesh:Object3d;
 	var skeleton:SkeletonD;
 	var modelMatrix:FastMatrix4;
@@ -159,7 +175,7 @@ class MeshLoader
 
 	public var marioMatrixAngle:Float = -Math.PI/2;
 
-	public var bonesTransformations:haxe.ds.Vector<Float >= new haxe.ds.Vector(32);
+	public var bonesTransformations:haxe.ds.Vector<Float> = new haxe.ds.Vector(32);
 	public var currentFrame:Int = 1;
 	public var timeElapsed:Float = 0;
 	public var lastTime:Float = 0;
@@ -169,6 +185,7 @@ class MeshLoader
 	var depthMap:Image;
 	var finalTarget:Image;
 	var blur:Image;
+
 //---------------------------------------------------------------------------
 // Scale
 //---------------------------------------------------------------------------
@@ -176,11 +193,7 @@ class MeshLoader
 	static inline var scaleCollisions = 0.0225;
 	
 	public var scaleMatrix:kha.math.FastMatrix4 = FastMatrix4.scale(scale,scale,scale);
-//---------------------------------------------------------------------------
-// Gamepad
-//---------------------------------------------------------------------------
-	public var virtualGamepad:VirtualGamepad;	
-//---------------------------------------------------------------------------
+
 	public var cameraMatrix:kha.math.FastMatrix4;
 	public var projection:kha.math.FastMatrix4;
 	public var projection00:kha.math.FastMatrix4 = FastMatrix4.orthogonalProjection(-30,25,-30,25,-1500,1000);
@@ -201,10 +214,12 @@ class MeshLoader
 //---------------------------------------------------------------------------
 // Shadow
 //---------------------------------------------------------------------------
+	
 	public var biasMatrixTrans_00 = FastMatrix4.translation(0.5,0.5,0.5).multmat(FastMatrix4.scale(0.5,0.5,0.5));
+
 //---------------------------------------------------------------------------
 // UI
-//---------------------------------------------------------------------------	
+//---------------------------------------------------------------------------
 	public var g2:kha.graphics2.Graphics;
 
 	public var fontColor:kha.Color = kha.Color.White;
@@ -214,6 +229,8 @@ class MeshLoader
 	public var extractStr:String = 'Extracting Meshes... ';
 
 	public var fps:FPStext = new FPStext();
+
+//---------------------------------------------------------------------------
 
 
 	public inline function start(): Void 
@@ -234,9 +251,10 @@ class MeshLoader
 		virtualGamepad.addStick(0, 1,  150, Main.height - 150, 150);
 		virtualGamepad.addButton(0, Main.width - 150, Main.height - 150, 150);
 		virtualGamepad.notify(onAxis, onButton);
+
 //---------------------------------------------------------------------------
 // Collision
-//---------------------------------------------------------------------------	
+//---------------------------------------------------------------------------
 		startExtracting = true;
 
 		var collisionConfiguration = BtDefaultCollisionConfiguration.create();
@@ -245,9 +263,11 @@ class MeshLoader
 		var solver = BtSequentialImpulseConstraintSolver.create();
 		dynamicsWorld = BtDiscreteDynamicsWorld.create(dispatcher, broadphase, solver, collisionConfiguration);
 		dynamicsWorld.setGravity(BtVector3.create(0,-50,0));
+
 //---------------------------------------------------------------------------
 // Rig n Bones	
-//---------------------------------------------------------------------------	
+//---------------------------------------------------------------------------
+		
 		Scheduler.addTimeTask(update, 0, timeFPS);
 
 		var data = new OgexData(Assets.blobs.mario_ogex.toString());
@@ -256,10 +276,13 @@ class MeshLoader
 		obj3d = MeshExtractor.extract(data, sk);
 		skeleton = sk[0];
 		data = new OgexData(Assets.blobs.untitled_ogex.toString());
+
 //---------------------------------------------------------------------------
 // Stage		
 //---------------------------------------------------------------------------
+		
 		level = MeshExtractor.extract(data, null);
+
 //---------------------------------------------------------------------------
 // Water setup
 //---------------------------------------------------------------------------
@@ -508,8 +531,8 @@ class MeshLoader
 				if(aValue > 0.5)
 				{
 					rotateJustCameraLeft = true;
-				}else
-				if(aValue < -0.5)
+				}
+				else if(aValue < -0.5)
 				{
 					rotateJustCameraRight = true;
 				}
@@ -520,7 +543,7 @@ class MeshLoader
 		//jump = (aId == 0 &&aValue>0);
 	}
 
-	inline public function update() 
+	public inline function update() 
 	{
 		fps.update();
 
@@ -544,6 +567,7 @@ class MeshLoader
 			modelMatrix._31 = startModelMatrix._31;
 			modelMatrix._32 = startModelMatrix._32;
 		/*
+		//Approx, traced values:
 			modelMatrix._30 = 0;
 			modelMatrix._31 = 72.5;
 			modelMatrix._32 = 1200;
@@ -578,12 +602,12 @@ class MeshLoader
 			F1 = false;
 		}
 
-		if(rotateCameraLeft||rotateJustCameraLeft) 
+		if(rotateCameraLeft || rotateJustCameraLeft) 
 		{ 
 			cameraAngle -= 0.02; 
 			isDirUpdated = false;
  		}
-		else if(rotateCameraRight||rotateJustCameraRight) 
+		else if(rotateCameraRight || rotateJustCameraRight) 
 		{ 
 			cameraAngle += 0.02; 	
 			isDirUpdated = false;
@@ -764,7 +788,7 @@ class MeshLoader
 			right = true;
 			rotateCameraLeft = true;
 		}
-		if (aCode == KeyCode.Up && !forward || aCode == KeyCode.W && !forward)//|| kha.Mouse.
+		if (aCode == KeyCode.Up && !forward || aCode == KeyCode.W && !forward) //|| kha.Mouse.
 		{
 			forward = true;
 		}
@@ -791,6 +815,10 @@ class MeshLoader
 	{	
 		if(loaded >= 100) 
 		{	
+//---------------------------------------------------------------------------
+// 	Time & frames
+//---------------------------------------------------------------------------			
+
 			time = Scheduler.realTime();
 			timeElapsed  += time - lastTime;
 			lastTime = time;
@@ -806,6 +834,10 @@ class MeshLoader
 				skeleton.setFrame(43);
 			}
 			
+//---------------------------------------------------------------------------
+// 	Shape shadow
+//---------------------------------------------------------------------------			
+	
 			lookVec3a.x = modelMatrix._30-200;
 			lookVec3a.y = modelMatrix._31+400;
 			lookVec3a.z = modelMatrix._32;
@@ -813,17 +845,19 @@ class MeshLoader
 			lookVec3b.y = modelMatrix._31+25;
 			lookVec3b.z = modelMatrix._32;
 
-			//render shadow
+
 			cameraMatrix = FastMatrix4.lookAt
 			(
 				lookVec3a, 
 				lookVec3b, 
 				lookVec3z
 			);
-	
+		
+
 			projection = projection00;
 			g = shadowMap.g4;
-			
+
+// /*
 			for(mesh in obj3d)
 			{
 				g.begin();
@@ -856,9 +890,13 @@ class MeshLoader
 				g.end();
 			}
 
+// */
 			biasMatrix = biasMatrixTrans_00;
 			biasMatrix = biasMatrix.multmat(projection).multmat(cameraMatrix);		
-			
+
+//---------------------------------------------------------------------------
+
+			projection = projection01_window;
 			g = finalTarget.g4;
 			clear = true;
 
@@ -872,7 +910,6 @@ class MeshLoader
 				lookVec3z
 			);
 
-			projection = projection01_window;
 			//FastMatrix4.orthogonalProjection(-25,25,-25,25,-1500,1000);
 			
 			for(mesh in level)
@@ -921,6 +958,9 @@ class MeshLoader
 			}
 		//	*/
 
+//---------------------------------------------------------------------------
+
+		//	*/
 
 			for(mesh in water)
 			{
@@ -942,6 +982,10 @@ class MeshLoader
 				
 				g.end();	
 			}
+
+		//	*/
+
+//---------------------------------------------------------------------------
 
 			//RenderTexture.renderTo(finalTarget,shadowMap,0,0,0.2,RenderTexture.Channel.Color,true);
 
@@ -973,7 +1017,8 @@ class MeshLoader
 				g2.drawString(extractStr, (Main.width/2) - (extractStr.length) * (g2.fontSize/6),(Main.height/2)-(g2.fontSize/2));
 				g2.fontSize = fontSize;
 			}
-			else { 
+			else 
+			{ 
 				g2.drawString(loadStr + loaded +"%", (Main.width/2) - (loadStr.length + 6) * (g2.fontSize/6),(Main.height/2.5)-(g2.fontSize/2));
 				//g2.drawString(loadAnim[animI], (Main.width/2) - (loadAnim[0].length) * (g2.fontSize),(Main.height/2)-(g2.fontSize/2)); 
 			}
@@ -992,7 +1037,7 @@ class MeshLoader
 
 	var startExtracting:Bool;
 	
-	public inline function onFontLoad(font:kha.Font)
+	public inline function onFontLoad(font:kha.Font):Void
 	{
 		loadingFont = font;
 		fontLoaded = true;
@@ -1001,7 +1046,7 @@ class MeshLoader
 
 	//public inline function onLoad(blob:kha.Blob) { Assets.loadEverything(start); }
 
-	public inline function new() 
+	public inline function new():Void 
 	{ 
 		Assets.loadFont(loadingFontStr,onFontLoad); 
 	 //Assets.loadBlob("./dolpSS00.png",onLoad);
