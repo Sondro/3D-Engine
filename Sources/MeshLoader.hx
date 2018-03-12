@@ -104,7 +104,8 @@ class MeshLoader
 		public var fallRigidBody:BtRigidBody;
 		public var dynamicsWorld:BtDiscreteDynamicsWorld;
 	#else
-		public var m = BtDefaultMotionState.create(BtTransform.create(), BtTransform.create());
+		//public var m = BtDefaultMotionState.create(BtTransform.create(), BtTransform.create());
+		public var m:BtMotionStatePointer;
 
 		public var fallRigidBody = BtRigidBody.create(BtRigidBodyConstructionInfo.create
 		(
@@ -123,8 +124,8 @@ class MeshLoader
 		);
 	#end
 	public var jumpHeight = 30;
-	public var fallVec = BtVector3.create(0,0,0);
-	public var jumpVec = BtVector3.create(0,30,0);	
+	public var fallVec3 = BtVector3.create(0,0,0);
+	public var jumpVec3 = BtVector3.create(0,30,0);	
 
 //---------------------------------------------------------------------------
 // Keys:
@@ -183,7 +184,7 @@ class MeshLoader
 	public var cameraMatrix:kha.math.FastMatrix4;
 	public var projection:kha.math.FastMatrix4;
 	public var projection00:kha.math.FastMatrix4 = FastMatrix4.orthogonalProjection(-30,25,-30,25,-1500,1000);
-	public var projection01_sceen:kha.math.FastMatrix4 = FastMatrix4.perspectiveProjection(45 , Main.width / Main.height, 0.1, 5000);
+	public var projection01_window:kha.math.FastMatrix4 = FastMatrix4.perspectiveProjection(45 , Main.width / Main.height, 0.1, 5000);
 
 	public var g:kha.graphics4.Graphics;
 	public var g4_2:kha.graphics4.Graphics2;
@@ -256,15 +257,15 @@ class MeshLoader
 		skeleton = sk[0];
 		data = new OgexData(Assets.blobs.untitled_ogex.toString());
 //---------------------------------------------------------------------------
-// Stage
+// Stage		
 //---------------------------------------------------------------------------
-		level = MeshExtractor.extract(data,null);
+		level = MeshExtractor.extract(data, null);
 //---------------------------------------------------------------------------
 // Water setup
 //---------------------------------------------------------------------------
 	
 		var dataWater = new OgexData(Assets.blobs.water_ogex.toString());
-		water = MeshExtractor.extract(dataWater,null);
+		water = MeshExtractor.extract(dataWater, null);
 
 		trace("meshes loaded");
 	
@@ -276,7 +277,7 @@ class MeshLoader
 		blur = Image.createRenderTarget(Std.int(Main.width/4),Std.int(Main.height/4),TextureFormat.RGBA32,DepthStencilFormat.DepthOnly,2);
 
 			
-		var collisionMesh = BtTriangleMesh.create(true,false);
+		var collisionMesh = BtTriangleMesh.create(true, false);
 		
 		var totalTriangles;
 		var vertexes;
@@ -527,8 +528,6 @@ class MeshLoader
 		m = fallRigidBody.getMotionState();
 		m.getWorldTransform(trans);
 
-		//pos = trans.getOrigin();
-
 		vel = fallRigidBody.getLinearVelocity();
 		
 		if(dir.x != 0) { dir.x = 0; }
@@ -674,22 +673,22 @@ class MeshLoader
 	//if(jump && vel.y() <= 0)
 		if(jump)
 		{
-			jumpVec.setX(vel.x());
-			//jumpVec.setY(jumpHeight);
-			jumpVec.setZ(vel.z());
+			jumpVec3.setX(vel.x());
+			//jumpVec3.setY(jumpHeight);
+			jumpVec3.setZ(vel.z());
 
-			fallRigidBody.setLinearVelocity(jumpVec);
+			fallRigidBody.setLinearVelocity(jumpVec3);
 		}
 		//dir.normalize()
 
 		velZ = vel.y();
 
-		fallVec.setX(dir.x);
-		//fallVec.setY(vel.y());
-		fallVec.setY(velZ);		
-		fallVec.setZ(dir.y);
+		fallVec3.setX(dir.x);
+		//fallVec3.setY(vel.y());
+		fallVec3.setY(velZ);		
+		fallVec3.setZ(dir.y);
 
-		fallRigidBody.setLinearVelocity(fallVec);
+		fallRigidBody.setLinearVelocity(fallVec3);
 		isDirUpdated = true;
 	}
 
@@ -702,36 +701,31 @@ class MeshLoader
 	inline function onKeyUp(aCode:KeyCode) 
 	{
 		//Reset Mario Pos
-		if(aCode == KeyCode.R)
+		if (aCode == KeyCode.R)
 		{
 			R = false;
 		}
 
-		if(aCode == KeyCode.F1)
+		if (aCode == KeyCode.F1)
 		{
 			F1 = false;
 		}
 
-		if(aCode == KeyCode.Left || aCode == KeyCode.A)
+		if (aCode == KeyCode.Left || aCode == KeyCode.A)
 		{
-			//left = false;
-			//rotateCameraRight = false;
-			right = false;
-			rotateCameraLeft = false;
-
-		}
-		if(aCode == KeyCode.Right || aCode == KeyCode.D)
-		{
-			//right = false;
-			//rotateCameraLeft = false;
 			left = false;
 			rotateCameraRight = false;
 		}
-		if(aCode == KeyCode.Up || aCode == KeyCode.W)
+		if (aCode == KeyCode.Right || aCode == KeyCode.D)
+		{
+			right = false;
+			rotateCameraLeft = false;
+		}
+		if (aCode == KeyCode.Up || aCode == KeyCode.W)
 		{
 			forward = false;
 		}
-		if(aCode == KeyCode.Down || aCode == KeyCode.S)
+		if (aCode == KeyCode.Down || aCode == KeyCode.S)
 		{
 			backward = false;
 		}
@@ -751,34 +745,30 @@ class MeshLoader
 	
 	inline function onKeyDown(aCode:KeyCode) 
 	{
-		if(aCode == KeyCode.R)
+		if (aCode == KeyCode.R)
 		{
 			R = true;
 		}
-		if(aCode == KeyCode.F1)
+		if (aCode == KeyCode.F1)
 		{
 			F1 = true;
 		}
 
-		if(aCode == KeyCode.Left && !left || aCode == KeyCode.A && !left)
+		if (aCode == KeyCode.Left && !left || aCode == KeyCode.A && !left)
 		{
-			//left = true;
-			//rotateCameraRight = true;
-			right = true;
-			rotateCameraLeft = true;
-		}
-		if(aCode == KeyCode.Right && !right || aCode == KeyCode.D && !right)
-		{
-			//right = true;
-			//rotateCameraLeft = true;
 			left = true;
 			rotateCameraRight = true;
 		}
-		if(aCode == KeyCode.Up && !forward || aCode == KeyCode.W && !forward)//|| kha.Mouse.
+		if (aCode == KeyCode.Right && !right || aCode == KeyCode.D && !right)
+		{
+			right = true;
+			rotateCameraLeft = true;
+		}
+		if (aCode == KeyCode.Up && !forward || aCode == KeyCode.W && !forward)//|| kha.Mouse.
 		{
 			forward = true;
 		}
-		if(aCode == KeyCode.Down && !backward || aCode == KeyCode.S && !backward)
+		if (aCode == KeyCode.Down && !backward || aCode == KeyCode.S && !backward)
 		{
 			backward = true;
 		}
@@ -788,14 +778,11 @@ class MeshLoader
 		}
 		if(aCode == KeyCode.Q)
 		{
-			//rotateJustCameraRight = true;
-			rotateJustCameraLeft = true;
-
+			rotateJustCameraRight = true;
 		}
 		if(aCode == KeyCode.E)
 		{
-			rotateJustCameraRight = true;
-			//rotateJustCameraLeft = true;
+			rotateJustCameraLeft = true;
 		}
 
 	}
@@ -843,7 +830,7 @@ class MeshLoader
 
 				if(clear)
 				{
-					g.clear(null, Math.POSITIVE_INFINITY);
+					g.clear(Main.clearColor, Math.POSITIVE_INFINITY);
 					clear = false;
 				}
 
@@ -885,7 +872,7 @@ class MeshLoader
 				lookVec3z
 			);
 
-			projection = projection01_sceen;
+			projection = projection01_window;
 			//FastMatrix4.orthogonalProjection(-25,25,-25,25,-1500,1000);
 			
 			for(mesh in level)
@@ -965,7 +952,7 @@ class MeshLoader
 			RenderTexture.renderTo(frame,finalTarget,0,0,1,RenderTexture.Channel.Color,true);
 
 		}
-		else if(fontLoaded)
+			else if(fontLoaded)
 		{
 			if(loaded == 0) 
 			{
@@ -1014,7 +1001,8 @@ class MeshLoader
 
 	//public inline function onLoad(blob:kha.Blob) { Assets.loadEverything(start); }
 
-	public inline function new() { 
+	public inline function new() 
+	{ 
 		Assets.loadFont(loadingFontStr,onFontLoad); 
 	 //Assets.loadBlob("./dolpSS00.png",onLoad);
 	}
