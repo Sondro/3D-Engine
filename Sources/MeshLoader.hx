@@ -179,7 +179,7 @@ class MeshLoader
 
 	public var marioMatrixAngle:Float = 0 - (Math.PI / 2);
 
-//	public var bonesTransformations:haxe.ds.Vector<Float> = new haxe.ds.Vector(16);
+//	public var bonesTransformations:haxe.ds.Vector<Float> = new haxe.ds.Vector(32);
 	public var bonesTransformations:haxe.ds.Vector<Float> = new haxe.ds.Vector(16);
 	public var currentFrame:Int = 1;
 	public var timeElapsed:Float = 0;
