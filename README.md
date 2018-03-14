@@ -5,15 +5,15 @@
 
 |   KEY(S)   |          EVENTS         |
 | :--------: | :---------------------: |
-|    WASD	   |          to move        |
+|    WASD    |          to move        |
 |   ARROWS   |`           ^           `|
 |    Q & E   |       rotate camera     |
 |     F1     |        toggle FPS       |
-|     O		   |          Jump			     |
-|  SPACEBAR  |`						^						`|
-|	 NUMPAD9   |`           ^           `|
+|     O      |          Jump           |
+|  SPACEBAR  |`	                      `|
+|  NUMPAD9   |`           ^           `|
 | Left Click |  enter fullscreen mode  |
-|    Esc		 |  exit fullscreen mode   |
+|    Esc     |  exit fullscreen mode   |
 
 ### To-Do:
 |     |                                                                |
