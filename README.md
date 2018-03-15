@@ -10,7 +10,7 @@
 |    Q & E   |       rotate camera     |
 |     F1     |        toggle FPS       |
 |     O      |          Jump           |
-|  SPACEBAR  |`	                      `|
+|  SPACEBAR  |`	          ^           `|
 |  NUMPAD9   |`           ^           `|
 | Left Click |  enter fullscreen mode  |
 |    Esc     |  exit fullscreen mode   |
