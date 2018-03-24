@@ -172,15 +172,16 @@ class MeshLoader
 	var level:Array<Object3d>;
 	var water:Array<Object3d>;
 
-	public var marioAngle:Float = 0.0;
+	public var actorAngle:Float = 0.0;
 	public var isDirUpdated:Bool = false;
 	public var curDir:String = '';
 	public var oldDir:String = '';
 
-	public var marioMatrixAngle:Float = 0 - (Math.PI / 2);
+	public var actorMatrixAngle:Float = 0 - (Math.PI / 2);
 
 //	public var bonesTransformations:haxe.ds.Vector<Float> = new haxe.ds.Vector(32);
-	public var bonesTransformations:haxe.ds.Vector<Float> = new haxe.ds.Vector(32);
+	public var bonesTransformations:kha.arrays.Float32Array = new kha.arrays.Float32Array(32);
+
 	public var currentFrame:Int = 1;
 	public var timeElapsed:Float = 0;
 	public var lastTime:Float = 0;
@@ -275,7 +276,7 @@ class MeshLoader
 		
 		Scheduler.addTimeTask(update, 0, timeFPS);
 
-		var data = new OgexData(Assets.blobs.mario_ogex.toString());
+		var data = new OgexData(Assets.blobs.actor_ogex.toString());
 	
 		var sk = SkeletonLoader.getSkeleton(data);
 		obj3d = MeshExtractor.extract(data, sk);
@@ -643,7 +644,7 @@ class MeshLoader
 				curDir = 'back';
 				controllerAngle = cameraAngle; 
 			}
-			else { controllerAngle = marioAngle; }
+			else { controllerAngle = actorAngle; }
 
 			oldDir = curDir;
 
@@ -691,11 +692,11 @@ class MeshLoader
 			fallRigidBody.activate(true);
 			angle = Math.atan2(dir.y,dir.x);
 			
-			if(angle != marioAngle) 
+			if(angle != actorAngle) 
 			{
-				modelMatrix = modelMatrix.multmat(FastMatrix4.rotationZ(marioAngle-angle));
-				marioMatrixAngle += marioAngle-angle;
-				marioAngle = angle;
+				modelMatrix = modelMatrix.multmat(FastMatrix4.rotationZ(actorAngle-angle));
+				actorMatrixAngle += actorAngle-angle;
+				actorAngle = angle;
 			}
 		}
 
@@ -729,7 +730,7 @@ class MeshLoader
 
 	inline function onKeyUp(aCode:KeyCode) 
 	{
-		//Reset Mario Pos
+		//Reset actor Pos
 		if (aCode == KeyCode.R)
 		{
 			R = false;
