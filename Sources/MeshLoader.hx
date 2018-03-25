@@ -74,7 +74,7 @@ class MeshLoader
 	public var pipelineWater:PipelineState;
 	public var projectionLocationWater:ConstantLocation;
 	public var modelLocationWater:ConstantLocation;
-	public var	offsetLocationWater:ConstantLocation;
+	public var offsetLocationWater:ConstantLocation;
 	public var scaleLocationWater:ConstantLocation;
 	public var textureLocationWater:TextureUnit;
 	public var modelViewWater:ConstantLocation;
