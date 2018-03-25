@@ -25,13 +25,11 @@ import kha.graphics4.DepthStencilFormat;
 import kha.graphics4.TextureFormat;
 import kha.graphics4.BlendingFactor;
 
-import kha.input.Keyboard;
-import kha.input.KeyCode;
-import kha.input.Gamepad;
-
 import haxebullet.Bullet;
 
 import ui.FPStext;
+
+import Input;
 
 
 class MeshLoader 
@@ -52,37 +50,37 @@ class MeshLoader
 // Pipeline setup
 //---------------------------------------------------------------------------
 
-	private var pipelineBones:PipelineState;
-	private var projectionLocationBones:ConstantLocation;
-	private var viewLocationBones:ConstantLocation;
-	private var modelLocationBones:ConstantLocation;
-	private var bonesLoction:ConstantLocation;
-	private var textureLocationBones:TextureUnit;
+	public var pipelineBones:PipelineState;
+	public var projectionLocationBones:ConstantLocation;
+	public var viewLocationBones:ConstantLocation;
+	public var modelLocationBones:ConstantLocation;
+	public var bonesLoction:ConstantLocation;
+	public var textureLocationBones:TextureUnit;
 
-	private var pipelineDepth:PipelineState;
-	private var projectionLocationDepth:ConstantLocation;
-	private var viewLocationDepth:ConstantLocation;
-	private var modelLocationDepth:ConstantLocation;
-	private var bonesLoctionDepth:ConstantLocation;
+	public var pipelineDepth:PipelineState;
+	public var projectionLocationDepth:ConstantLocation;
+	public var viewLocationDepth:ConstantLocation;
+	public var modelLocationDepth:ConstantLocation;
+	public var bonesLoctionDepth:ConstantLocation;
 
-	private var pipelineStatic:PipelineState;
-	private var projectionLocationStatic:ConstantLocation;
-	private var viewLocationStatic:ConstantLocation;
-	private var modelLocationStatic:ConstantLocation;
-	private var textureLocationStatic:TextureUnit;
-	private var shadowMapLocation:TextureUnit;
-	private var depthBiasLocation:ConstantLocation;
+	public var pipelineStatic:PipelineState;
+	public var projectionLocationStatic:ConstantLocation;
+	public var viewLocationStatic:ConstantLocation;
+	public var modelLocationStatic:ConstantLocation;
+	public var textureLocationStatic:TextureUnit;
+	public var shadowMapLocation:TextureUnit;
+	public var depthBiasLocation:ConstantLocation;
 
-	private var pipelineWater:PipelineState;
-	private var projectionLocationWater:ConstantLocation;
-	private var modelLocationWater:ConstantLocation;
-	private var	offsetLocationWater:ConstantLocation;
-	private var scaleLocationWater:ConstantLocation;
-	private var textureLocationWater:TextureUnit;
-	private var modelViewWater:ConstantLocation;
+	public var pipelineWater:PipelineState;
+	public var projectionLocationWater:ConstantLocation;
+	public var modelLocationWater:ConstantLocation;
+	public var	offsetLocationWater:ConstantLocation;
+	public var scaleLocationWater:ConstantLocation;
+	public var textureLocationWater:TextureUnit;
+	public var modelViewWater:ConstantLocation;
 
-	private var started:Bool = false;
-	private var init:Bool = false;
+	public var started:Bool = false;
+	public var init:Bool = false;
 
 //---------------------------------------------------------------------------	
 // Physics
@@ -138,39 +136,23 @@ class MeshLoader
 	public var jumpVec3 = BtVector3.create(0,30,0);	
 
 //---------------------------------------------------------------------------
-// Keys:
+// Input:
 //---------------------------------------------------------------------------
 
-	public var R:Bool = false;
-	public var F1:Bool = false;
-
-	public var left:Bool = false;
-	public var right:Bool = false;
-	public var forward:Bool = false;
-	public var backward:Bool = false;
-	public var jump:Bool = false;
-	public var rotateCameraLeft:Bool = false;
-	public var rotateCameraRight:Bool = false;
-	public var rotateJustCameraLeft:Bool = false;
-	public var rotateJustCameraRight:Bool = false;
-//---------------------------------------------------------------------------
-// Gamepad
-//---------------------------------------------------------------------------
-	
-	public var virtualGamepad:VirtualGamepad;	
+	public var input:Input;
 
 //---------------------------------------------------------------------------
 // Meshes
 //---------------------------------------------------------------------------
 
-	var mesh:Object3d;
-	var skeleton:SkeletonD;
-	var modelMatrix:FastMatrix4;
-	var startModelMatrix:FastMatrix4;
+	public var mesh:Object3d;
+	public var skeleton:SkeletonD;
+	public var modelMatrix:FastMatrix4;
+	public var startModelMatrix:FastMatrix4;
 
-	var obj3d:Array<Object3d>;
-	var level:Array<Object3d>;
-	var water:Array<Object3d>;
+	public var obj3d:Array<Object3d>;
+	public var level:Array<Object3d>;
+	public var water:Array<Object3d>;
 
 	public var actorAngle:Float = 0.0;
 	public var isDirUpdated:Bool = false;
@@ -187,10 +169,10 @@ class MeshLoader
 	public var lastTime:Float = 0;
 	public var velZ:Float = 0;
 	
-	var shadowMap:Image;
-	var depthMap:Image;
-	var finalTarget:Image;
-	var blur:Image;
+	public var shadowMap:Image;
+	public var depthMap:Image;
+	public var finalTarget:Image;
+	public var blur:Image;
 
 //---------------------------------------------------------------------------
 // Scale
@@ -251,12 +233,7 @@ class MeshLoader
 //---------------------------------------------------------------------------
 // Input
 //---------------------------------------------------------------------------	
-		Keyboard.get().notify(onKeyDown, onKeyUp, onKeyPress);
-		kha.input.Gamepad.get(0).notify(onAxis, onButton);
-		virtualGamepad = new VirtualGamepad(Main.width, Main.height);
-		virtualGamepad.addStick(0, 1,  150, Main.height - 150, 150);
-		virtualGamepad.addButton(0, Main.width - 150, Main.height - 150, 150);
-		virtualGamepad.notify(onAxis, onButton);
+		input = new Input();
 
 //---------------------------------------------------------------------------
 // Collision
@@ -276,7 +253,7 @@ class MeshLoader
 		
 		Scheduler.addTimeTask(update, 0, timeFPS);
 
-		var data = new OgexData(Assets.blobs.actor_ogex.toString());
+		var data = new OgexData(Assets.blobs.mario_ogex.toString());
 	
 		var sk = SkeletonLoader.getSkeleton(data);
 		obj3d = MeshExtractor.extract(data, sk);
@@ -493,62 +470,11 @@ class MeshLoader
 		{
 			this.width = width;
 			this.height = height;
-			virtualGamepad.resize(width, height);
+			input.virtualGamepad.resize(width, height);
 			//finalTarget.unload();
 			//finalTarget = Image.createRenderTarget(width,height,TextureFormat.RGBA32,DepthStencilFormat.DepthOnly,2);
 		}
 	}
-	private inline function onAxis(aId:Int,aValue:Float):Void{
-			if(aId == 0)
-			{
-				right = false;
-				left = false;
-				rotateCameraLeft = false;
-				rotateCameraRight = false;
-				if(aValue > 0.5)
-				{
-					right = true;
-					rotateCameraLeft = true;
-				} else
-				if(aValue < -0.5)
-				{
-					left = true;
-					rotateCameraRight = true;
-				}
-				
-			}
-			if(aId == 1)
-			{
-				forward = false;
-				backward = false;
-				if(aValue>0.5)
-				{
-					forward = true;
-				} else
-				if(aValue < -0.5)
-				{
-					backward = true;
-				}
-			}
-			if(aId == 2)
-			{
-				rotateJustCameraLeft = false;
-				rotateJustCameraRight = false;
-				if(aValue > 0.5)
-				{
-					rotateJustCameraLeft = true;
-				}
-				else if(aValue < -0.5)
-				{
-					rotateJustCameraRight = true;
-				}
-			}
-	}
-	private inline function onButton(aId:Int,aValue:Float):Void
-	{
-		//jump = (aId == 0 &&aValue>0);
-	}
-
 	public inline function update() 
 	{
 		fps.update();
@@ -566,149 +492,8 @@ class MeshLoader
 		modelMatrix._31 = cast pos.y() * 10;
 		modelMatrix._32 = cast pos.z() * 10;
 		
-		//Reset position
-		if(R) 
-		{
-			modelMatrix._30 = startModelMatrix._30;
-			modelMatrix._31 = startModelMatrix._31;
-			modelMatrix._32 = startModelMatrix._32;
-		/*
-		//Approx, traced values:
-			modelMatrix._30 = 0;
-			modelMatrix._31 = 72.5;
-			modelMatrix._32 = 1200;
-		*/
-		/*
-			modelMatrix._00 = startModelMatrix._00;
-			modelMatrix._01 = startModelMatrix._01;
-			modelMatrix._02 = startModelMatrix._02;
-			modelMatrix._03 = startModelMatrix._03;
-
-			modelMatrix._10 = startModelMatrix._10;
-			modelMatrix._11 = startModelMatrix._11;
-			modelMatrix._12 = startModelMatrix._12;
-			modelMatrix._13 = startModelMatrix._13;
+		input.update();
 	
-			modelMatrix._20 = startModelMatrix._20;
-			modelMatrix._21 = startModelMatrix._21;
-			modelMatrix._22 = startModelMatrix._22;
-			modelMatrix._23 = startModelMatrix._23;
-			
-			modelMatrix._30 = startModelMatrix._30;
-			modelMatrix._31 = startModelMatrix._31;
-			modelMatrix._32 = startModelMatrix._32;
-			modelMatrix._33 = startModelMatrix._33;
-	*/
-
-		}
-
-		if(F1) 
-		{
-			fps.toggleFPS();
-			F1 = false;
-		}
-
-		if(rotateCameraLeft || rotateJustCameraLeft) 
-		{ 
-			cameraAngle -= 0.02; 
-			isDirUpdated = false;
- 		}
-		else if(rotateCameraRight || rotateJustCameraRight) 
-		{ 
-			cameraAngle += 0.02; 	
-			isDirUpdated = false;
-		}
-
-		if(left || right|| forward || backward)
-		{	
-			if(left) 
-			{
-				dir.y += 1;
-				curDir = 'left';
-				isDirUpdated = false;
-			}
-			if(right) 
-			{
-				dir.y -= 1;
-				curDir = 'right';
-				isDirUpdated = false;
-			}
-			if(forward) 
-			{
-				dir.x -= 1;
-				curDir = 'forward';
-			}
-			if(backward) 
-			{
-				dir.x += 1;
-				curDir = 'back';
-				controllerAngle = cameraAngle; 
-			}
-			else { controllerAngle = actorAngle; }
-
-			oldDir = curDir;
-
-			if(isDirUpdated != true)
-			{
-				dir = dir.mult(10);
-		 
-				cs = Math.cos(-cameraAngle+PIdiv2);
-				sn = Math.sin(-cameraAngle+PIdiv2);
-				px = dir.x * cs-dir.y * sn;
-				py = dir.x * sn+dir.y * cs;
-
-				trace('cs: ' + cs + ' sn: ' + sn + ' px: ' + px + ' py: ' + py);
-
-				dir.x = px+vel.x() * 0.9;
-				dir.y = py+vel.z() * 0.9;
-		
-				if(dir.length > 20)
-				{
-					dir.normalize();
-					dir = dir.mult(20);
-				}
-			}
-			else 
-			{
-				dir = dir.mult(10);
-		 
-				cs = Math.cos(-cameraAngle+PIdiv2);
-				sn = Math.sin(-cameraAngle+PIdiv2);
-				px = dir.x * cs-dir.y * sn;
-				py = dir.x * sn+dir.y * cs;
-
-				trace('cs: ' + cs + ' sn: ' + sn + ' px: ' + px + ' py: ' + py);
-
-				dir.x = px+vel.x() * 0.9;
-				dir.y = py+vel.z() * 0.9;
-		
-				if(dir.length > 20)
-				{
-					dir.normalize();
-					dir = dir.mult(20);
-				}
-			}
-
-			fallRigidBody.activate(true);
-			angle = Math.atan2(dir.y,dir.x);
-			
-			if(angle != actorAngle) 
-			{
-				modelMatrix = modelMatrix.multmat(FastMatrix4.rotationZ(actorAngle-angle));
-				actorMatrixAngle += actorAngle-angle;
-				actorAngle = angle;
-			}
-		}
-
-	//if(jump && vel.y() <= 0)
-		if(jump)
-		{
-			jumpVec3.setX(vel.x());
-			//jumpVec3.setY(jumpHeight);
-			jumpVec3.setZ(vel.z());
-
-			fallRigidBody.setLinearVelocity(jumpVec3);
-		}
 		//dir.normalize()
 
 		velZ = vel.y();
@@ -722,100 +507,6 @@ class MeshLoader
 		isDirUpdated = true;
 	}
 
-
-	inline function onKeyPress(aText:String) 
-	{
-		
-	}
-
-	inline function onKeyUp(aCode:KeyCode) 
-	{
-		//Reset actor Pos
-		if (aCode == KeyCode.R)
-		{
-			R = false;
-		}
-
-		if (aCode == KeyCode.F1)
-		{
-			F1 = false;
-		}
-
-		if (aCode == KeyCode.Left || aCode == KeyCode.A)
-		{
-			left = false;
-			rotateCameraRight = false;
-		}
-		if (aCode == KeyCode.Right || aCode == KeyCode.D)
-		{
-			right = false;
-			rotateCameraLeft = false;
-		}
-		if (aCode == KeyCode.Up || aCode == KeyCode.W)
-		{
-			forward = false;
-		}
-		if (aCode == KeyCode.Down || aCode == KeyCode.S)
-		{
-			backward = false;
-		}
-		if(aCode == KeyCode.Space || aCode == KeyCode.O || aCode == KeyCode.Numpad9)
-		{
-			jump = false;
-		}
-		if(aCode == KeyCode.Q)
-		{
-			rotateJustCameraRight = false;
-		}
-		if(aCode == KeyCode.E)
-		{
-			rotateJustCameraLeft = false;
-		}
-	}
-	
-	inline function onKeyDown(aCode:KeyCode) 
-	{
-		if (aCode == KeyCode.R)
-		{
-			R = true;
-		}
-		if (aCode == KeyCode.F1)
-		{
-			F1 = true;
-		}
-
-		if (aCode == KeyCode.Left && !left || aCode == KeyCode.A && !left)
-		{
-			left = true;
-			rotateCameraRight = true;
-		}
-		if (aCode == KeyCode.Right && !right || aCode == KeyCode.D && !right)
-		{
-			right = true;
-			rotateCameraLeft = true;
-		}
-		if (aCode == KeyCode.Up && !forward || aCode == KeyCode.W && !forward) //|| kha.Mouse.
-		{
-			forward = true;
-		}
-		if (aCode == KeyCode.Down && !backward || aCode == KeyCode.S && !backward)
-		{
-			backward = true;
-		}
-		if(aCode == KeyCode.Space && !jump || aCode == KeyCode.O && !jump || aCode == KeyCode.Numpad9 && !jump)
-		{
-			jump = true;
-		}
-		if(aCode == KeyCode.Q)
-		{
-			rotateJustCameraRight = true;
-		}
-		if(aCode == KeyCode.E)
-		{
-			rotateJustCameraLeft = true;
-		}
-
-	}
 
 	public inline function render(frame:Framebuffer): Void 
 	{	
@@ -835,10 +526,8 @@ class MeshLoader
 				skeleton.setFrame(18+ ++currentFrame%15);
 			}
 
-			if(!left && !right && !forward && !backward)
-			{
-				skeleton.setFrame(43);
-			}
+			input.render();
+
 			
 //---------------------------------------------------------------------------
 // 	Shape shadow
