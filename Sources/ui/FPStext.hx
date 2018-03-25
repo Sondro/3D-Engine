@@ -52,14 +52,17 @@ class FPStext
 
 	inline public function init():Void
 	{
+		fontSize = Main.app.fontSize;
 		xMargin = fontSize * 2;
-		//font = kha.Assets.fonts.Oswald_Regular;
+		font = Main.app.loadingFont;
 		//x = plume.Plm.gameWidth - xMargin;
+		x = Main.width - xMargin;
 	}
 
 	inline public function draw(g:kha.graphics2.Graphics):Void
 	{	
-		if(!on) { return; }	
+		if(!on) { return; }
+		totalFrames++;	
 		g.drawString(Std.string(this.curFPS), x, y);
 	}
 	
