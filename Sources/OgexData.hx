@@ -125,7 +125,7 @@ class OgexData extends Container
 		}
 	}
 	
-	inline function traverseNodesStep(node:Node, callback:Node->Void) {
+	public inline function traverseNodesStep(node:Node, callback:Node->Void) {
 		callback(node);
 		for(i in 0...node.children.length) {
 			traverseNodesStep(node.children[i], callback);
@@ -161,20 +161,20 @@ class OgexData extends Container
 	}
 
 	// Parsing
-	inline function readLine():Array<String> {
+	public inline function readLine():Array<String> {
 		str = file.readLine();
 		str = StringTools.trim(str);
 		strArr = str.split(" ");
 		return strArr;
 	}
 
-	inline function readLine2():String {
+	public inline function readLine2():String {
 		str = file.readLine();
 		str = StringTools.trim(str);
 		return str;
 	}
 
-	inline function parseMetric(strArr:Array<String>):Metric {
+	public inline function parseMetric(strArr:Array<String>):Metric {
 		metric = new Metric();
 		metric.key = strArr[3].split('"')[1];
 		str = strArr[5].split("{")[1].split("}")[0];
@@ -187,7 +187,7 @@ class OgexData extends Container
 		return metric;
 	}
 
-	inline function parseNode(strArr:Array<String>, parent:Container):Node 
+	public inline function parseNode(strArr:Array<String>, parent:Container):Node 
 	{
 		var node = new Node();
 		node.parent = parent;
@@ -219,7 +219,7 @@ class OgexData extends Container
 		return node;
 	}
 
-	inline function parseGeometryNode(strArr:Array<String>, parent:Container):GeometryNode 
+	public inline function parseGeometryNode(strArr:Array<String>, parent:Container):GeometryNode 
 	{
 		var geoNode = new GeometryNode();
 		geoNode.parent = parent;
@@ -255,7 +255,7 @@ class OgexData extends Container
 		return geoNode;
 	}
 
-	inline function parseLightNode(strArr:Array<String>, parent:Container):LightNode 
+	public inline function parseLightNode(strArr:Array<String>, parent:Container):LightNode 
 	{
 		var lightNode = new LightNode();
 		lightNode.parent = parent;
@@ -289,7 +289,7 @@ class OgexData extends Container
 		return lightNode;
 	}
 
-	inline function parseCameraNode(strArr:Array<String>, parent:Container):CameraNode 
+	public inline function parseCameraNode(strArr:Array<String>, parent:Container):CameraNode 
 	{
 		var camNode = new CameraNode();
 		camNode.parent = parent;
@@ -323,7 +323,7 @@ class OgexData extends Container
 		return camNode;
 	}
 
-	inline function parseBoneNode(strArr:Array<String>, parent:Container):BoneNode 
+	public inline function parseBoneNode(strArr:Array<String>, parent:Container):BoneNode 
 	{
 		var boneNode = new BoneNode();
 		boneNode.parent = parent;
@@ -367,7 +367,7 @@ class OgexData extends Container
 		return geoObject;
 	}
 
-	inline function parseMesh(strArr:Array<String>):Mesh 
+	public inline function parseMesh(strArr:Array<String>):Mesh 
 	{
 		mesh = new Mesh();
 		mesh.primitive = strArr[3].split('"')[1];
@@ -389,7 +389,7 @@ class OgexData extends Container
 		return mesh;
 	}
 
-	inline function parseSkin(strArr:Array<String>):Skin 
+	public inline function parseSkin(strArr:Array<String>):Skin 
 	{
 		skin = new Skin();
 		while(true) 
@@ -414,7 +414,7 @@ class OgexData extends Container
 		return skin;
 	}
 
-	inline function parseSkeleton(strArr:Array<String>):Skeleton 
+	public inline function parseSkeleton(strArr:Array<String>):Skeleton 
 	{
 		skel = new Skeleton();
 		while(true) 
@@ -433,7 +433,7 @@ class OgexData extends Container
 		return skel;
 	}
 
-	inline function parseBoneRefArray(strArr:Array<String>):BoneRefArray 
+	public inline function parseBoneRefArray(strArr:Array<String>):BoneRefArray 
 	{
 		boneRefArray = new BoneRefArray();
 		readLine2(); readLine2(); readLine2();
@@ -444,7 +444,7 @@ class OgexData extends Container
 		return boneRefArray;
 	}
 
-	inline function parseTransformArray(strArr:Array<String>):Array<Transform> 
+	public inline function parseTransformArray(strArr:Array<String>):Array<Transform> 
 	{
 		transArray = new Array<Transform>();
 		readLine2(); readLine2(); readLine2();
@@ -464,7 +464,7 @@ class OgexData extends Container
 		return transArray;
 	}
 
-	inline function parseBoneCountArray(strArr:Array<String>):BoneCountArray 
+	public inline function parseBoneCountArray(strArr:Array<String>):BoneCountArray 
 	{
 		boneCountArray = new BoneCountArray();
 		readLine2(); readLine2(); readLine2();
@@ -481,7 +481,7 @@ class OgexData extends Container
 		return boneCountArray;
 	}
 
-	inline function parseBoneIndexArray(strArr:Array<String>):BoneIndexArray 
+	public inline function parseBoneIndexArray(strArr:Array<String>):BoneIndexArray 
 	{
 		boneIndexArray = new BoneIndexArray();
 		readLine2(); readLine2(); readLine2();
@@ -498,7 +498,7 @@ class OgexData extends Container
 		return boneIndexArray;
 	}
 
-	inline function parseBoneWeightArray(strArr:Array<String>):BoneWeightArray 
+	public inline function parseBoneWeightArray(strArr:Array<String>):BoneWeightArray 
 	{
 		boneWeightArray = new BoneWeightArray();
 		readLine2(); readLine2(); readLine2();
@@ -515,7 +515,7 @@ class OgexData extends Container
 		return boneWeightArray;
 	}
 
-	inline function parseVertexArray(strArr:Array<String>):VertexArray 
+	public inline function parseVertexArray(strArr:Array<String>):VertexArray 
 	{
 		vertexArray = new VertexArray();
 		vertexArray.attrib = strArr[3].split('"')[1];
@@ -539,7 +539,7 @@ class OgexData extends Container
 		return vertexArray;
 	}
 
-	inline function parseIndexArray(strArr:Array<String>):IndexArray 
+	public inline function parseIndexArray(strArr:Array<String>):IndexArray 
 	{
 		indexArray = new IndexArray();
 		readLine2();
@@ -560,7 +560,7 @@ class OgexData extends Container
 		return indexArray;
 	}
 
-	inline function parseLightObject(strArr:Array<String>):LightObject 
+	public inline function parseLightObject(strArr:Array<String>):LightObject 
 	{
 		lightObject = new LightObject();
 		lightObject.ref = strArr[1];
@@ -582,7 +582,7 @@ class OgexData extends Container
 		return lightObject;
 	}
 
-	inline function parseColor(strArr:Array<String>):Color 
+	public inline function parseColor(strArr:Array<String>):Color 
 	{
 		color = new Color();
 		color.attrib = strArr[3].split('"')[1];
@@ -596,7 +596,7 @@ class OgexData extends Container
 		}
 		return color;
 	}
-	inline function parseTexture(strArr:Array<String>):Texture 
+	public inline function parseTexture(strArr:Array<String>):Texture 
 	{
 		texture = new Texture();
 		texture.attrib = strArr[3].split('"')[1];
@@ -611,7 +611,7 @@ class OgexData extends Container
 		return texture;
 	}
 
-	inline function parseAtten(strArr:Array<String>):Atten 
+	public inline function parseAtten(strArr:Array<String>):Atten 
 	{
 		atten = new Atten();
 		atten.curve = strArr[3].split('"')[1];
@@ -629,7 +629,7 @@ class OgexData extends Container
 		return atten;
 	}
 
-	inline function parseParam(strArr:Array<String>):Param 
+	public inline function parseParam(strArr:Array<String>):Param 
 	{
 		param = new Param();
 		param.attrib = strArr[3].split('"')[1];
@@ -640,7 +640,7 @@ class OgexData extends Container
 		return param;
 	}
 
-	inline function parseCameraObject(strArr:Array<String>):CameraObject 
+	public inline function parseCameraObject(strArr:Array<String>):CameraObject 
 	{
 		cameraObject = new CameraObject();
 		cameraObject.ref = strArr[1].split("\t")[0];
@@ -658,7 +658,7 @@ class OgexData extends Container
 		return cameraObject;
 	}
 
-	inline function parseMaterial(strArr:Array<String>):Material 
+	public inline function parseMaterial(strArr:Array<String>):Material 
 	{
 		material = new Material();
 		material.ref = strArr[1];
@@ -682,13 +682,13 @@ class OgexData extends Container
 		return material;
 	}
 
-	inline function parseName(strArr:Array<String>):String { return strArr[2].split('"')[1];	}
+	public inline function parseName(strArr:Array<String>):String { return strArr[2].split('"')[1];	}
 
-	inline function parseObjectRef(strArr:Array<String>):String { return strArr[2].split("}")[0].substr(1); }
+	public inline function parseObjectRef(strArr:Array<String>):String { return strArr[2].split("}")[0].substr(1); }
 
-	inline function parseMaterialRef(strArr:Array<String>):String { return strArr[5].split("}")[0].substr(1); }
+	public inline function parseMaterialRef(strArr:Array<String>):String { return strArr[5].split("}")[0].substr(1); }
 
-	inline function parseTransform(strArr:Array<String>):Transform 
+	public inline function parseTransform(strArr:Array<String>):Transform 
 	{
 		// TODO: Correct value parsing
 		trans = new Transform();
@@ -710,7 +710,7 @@ class OgexData extends Container
 		return trans;
 	}
 
-	inline function parseAnimation(strArr:Array<String>):Animation 
+	public inline function parseAnimation(strArr:Array<String>):Animation 
 	{
 		anim = new Animation();
 		while(true) 
@@ -727,7 +727,7 @@ class OgexData extends Container
 		return anim;
 	}
 
-	inline function parseTrack(strArr:Array<String>):Track 
+	public inline function parseTrack(strArr:Array<String>):Track 
 	{
 		track = new Track();
 		track.target = strArr[3].substr(0, strArr[3].length - 2);
@@ -747,7 +747,7 @@ class OgexData extends Container
 		return track;
 	}
 
-	inline function parseTime(strArr:Array<String>):OgexTime 
+	public inline function parseTime(strArr:Array<String>):OgexTime 
 	{
 		ogexTime = new OgexTime();
 		while(true) 
@@ -765,7 +765,7 @@ class OgexData extends Container
 		return ogexTime;
 	}
 
-	inline function parseValue(strArr:Array<String>):Value 
+	public inline function parseValue(strArr:Array<String>):Value 
 	{
 		value = new Value();
 		while(true) 
@@ -782,7 +782,7 @@ class OgexData extends Container
 		return value;
 	}
 
-	inline function parseKey(strArr:Array<String>):Key 
+	public inline function parseKey(strArr:Array<String>):Key 
 	{
 		key = new Key();
 		if(strArr.length > 2) 
