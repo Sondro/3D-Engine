@@ -13,8 +13,10 @@ class Main
 	public static var winTitle = '3D Demo';
 	public static var winChange:Bool = false;
 	public static var clearColor:kha.Color = 0xff93b7e9;
-	
+
 	public var inFullScreen:Bool;
+	
+	public static var app:MeshLoader;
 
 	#if js
 		public var setCanvas = cast(js.Browser.document.getElementById('khanvas'), js.html.CanvasElement);	
@@ -37,12 +39,12 @@ class Main
 		  	trace("fullscreen mode");
 			 
 		  	System.changeResolution(js.Browser.window.screen.availWidth,js.Browser.window.screen.availHeight);
-			 game.resize(js.Browser.window.screen.availWidth,js.Browser.window.screen.availHeight);
+			 app.resize(js.Browser.window.screen.availWidth,js.Browser.window.screen.availHeight);
 		  } 
 			else 
 		 	{
 				trace("windowed mode");
-				game.resize(width, height);
+				app.resize(width, height);
 				System.changeResolution(width, height);
 			}
 			//trace(js.Browser.window.screen.availWidth+"x"+js.Browser.window.screen.availHeight);
@@ -66,11 +68,12 @@ class Main
 			System.init({title: winTitle, width: width, height: height}, init);
 		#end
 	}
-	static var game:MeshLoader;
-	static inline function init():Void 
+
+	
+	public static inline function init():Void 
 	{
 		Mouse.get().notify(onMouseDown, onMouseDown, null, null);
-		game = new MeshLoader();
-		System.notifyOnRender(game.render);
+		app = new MeshLoader();
+		System.notifyOnRender(app.render);
 	}
 }
