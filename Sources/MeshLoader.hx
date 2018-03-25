@@ -79,6 +79,8 @@ class MeshLoader
 	public var textureLocationWater:TextureUnit;
 	public var modelViewWater:ConstantLocation;
 
+	public var waterHeight = - 7;
+	public var waterColor = kha.Color.Cyan;
 	public var started:Bool = false;
 	public var init:Bool = false;
 
@@ -144,7 +146,7 @@ class MeshLoader
 //---------------------------------------------------------------------------
 // Meshes
 //---------------------------------------------------------------------------
-
+	public var isUnderwater:Bool = false;
 	public var mesh:Object3d;
 	public var skeleton:SkeletonD;
 	public var modelMatrix:FastMatrix4;
@@ -675,7 +677,18 @@ class MeshLoader
 //---------------------------------------------------------------------------
 
 			//RenderTexture.renderTo(finalTarget,shadowMap,0,0,0.2,RenderTexture.Channel.Color,true);
-
+			
+			//Murky underwater
+			if(pos.y() < waterHeight)
+			{
+				g2.color = waterColor;
+				g2.opacity = 0.5;
+				g2.fillRect(0,0, Main.width, Main.height);
+				
+				g2.color = fontColor;
+				g2.opacity = 1;
+			}
+			
 			fps.draw(g2);
 			g2.end();
 
