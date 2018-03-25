@@ -1,7 +1,8 @@
 #version 450
 
-float uFogDistance;       
-float vFogClampedDistance;   
+out float uFogDistance;  
+
+out float vFogClampedDistance;   
 out vec2 texCoord;
 
 void kore() {
