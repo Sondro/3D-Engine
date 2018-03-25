@@ -18,7 +18,7 @@
 ### To-Do:
 |     |                                                                |
 | --- | -------------------------------------------------------------- |
-|`[+]`| Break-out input into Inputter.hx (class) from MeshLoader.hx    |
+|`[+]`| Break-out input into Physics.hx (class) from MeshLoader.hx    |
 |`[+]`| Break-out render/update from MeshLoader.hx                     |
 
 
