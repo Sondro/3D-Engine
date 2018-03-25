@@ -211,7 +211,8 @@ class MeshLoader
 	public var g2:kha.graphics2.Graphics;
 
 	public var fontColor:kha.Color = kha.Color.White;
-	public var loaded:Int = 0;		
+	public var loaded:Int = 0;	
+	public var loadingFont:kha.Font;	
 	public var fontSize:Int = 64;
 	public var loadStr:String = 'Loading... ';
 	public var extractStr:String = 'Extracting Meshes... ';
@@ -226,10 +227,8 @@ class MeshLoader
 //---------------------------------------------------------------------------
 // FPS
 //---------------------------------------------------------------------------
-		fps.font = loadingFont;
-		fps.fontSize = fontSize;
 		fps.init();
-		fps.x = Main.width - fps.xMargin;
+		
 //---------------------------------------------------------------------------
 // Input
 //---------------------------------------------------------------------------	
@@ -466,7 +465,7 @@ class MeshLoader
 
 	public inline function resize(width:Int,height:Int)
 	{
-		if(this.width != width&&this.height != height)
+		if(this.width != width && this.height != height)
 		{
 			this.width = width;
 			this.height = height;
@@ -684,7 +683,6 @@ class MeshLoader
 
 			//RenderTexture.renderTo(finalTarget,shadowMap,0,0,0.2,RenderTexture.Channel.Color,true);
 
-			fps.totalFrames++;
 			fps.draw(g2);
 			g2.end();
 
@@ -727,9 +725,7 @@ class MeshLoader
 //var loadAnim = ['/','-','\"','|']; var animI = 0;
 	
 	var fontLoaded:Bool;
-	var loadingFont:kha.Font;
 	var loadingFontStr:String = 'mainfont';
-
 	var startExtracting:Bool;
 	
 	public inline function onFontLoad(font:kha.Font):Void
